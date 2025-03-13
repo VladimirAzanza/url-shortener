@@ -1,12 +1,13 @@
 package app
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 )
 
-var urlStore = make(map[int]string, 0)
+var urlStore = make(map[string]string, 0)
 
 func MainService(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -15,29 +16,30 @@ func MainService(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		handleGet(w, r)
 	default:
-		http.Error(w, "Method not allowed", http.StatusBadRequest)
+		http.Error(w, "method not allowed", http.StatusBadRequest)
 	}
 }
 
 func handlePost(w http.ResponseWriter, r *http.Request) {
-	var originalURL string
-	err := json.NewDecoder(r.Body).Decode(&originalURL)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
-	shortID := 123
+	originalURL := string(body)
+	shortID := "123"
 	_, exists := urlStore[shortID]
 
 	if exists {
-		shortID += 10
+		shortID += "10"
 		urlStore[shortID] = originalURL
 	} else {
 		urlStore[shortID] = originalURL
 	}
 
-	shortURL := fmt.Sprintf("http://localhost:8080/%d", (shortID))
+	shortURL := fmt.Sprintf("http://localhost:8080/%s", (shortID))
 
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
@@ -46,5 +48,18 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGet(w http.ResponseWriter, r *http.Request) {
+	shortID := strings.TrimPrefix(r.URL.Path, "/")
+	if shortID == "" {
+		http.Error(w, "not ID addded", http.StatusBadRequest)
+		return
+	}
 
+	originalURL, exists := urlStore[shortID]
+	if !exists {
+		http.Error(w, "URL not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Location", originalURL)
+	w.WriteHeader(http.StatusTemporaryRedirect)
 }
