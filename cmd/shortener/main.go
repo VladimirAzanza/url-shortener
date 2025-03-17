@@ -17,12 +17,3 @@ func main() {
 		fx.Invoke(server.StartServer),
 	).Run()
 }
-
-/*
-func main() {
-	err := http.ListenAndServe(":8080", http.HandlerFunc(controller.MainService))
-	if err != nil {
-		panic(err)
-	}
-}
-*/
