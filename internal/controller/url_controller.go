@@ -3,6 +3,7 @@ package controller
 import (
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/VladimirAzanza/url-shortener/internal/services"
 )
@@ -29,6 +30,23 @@ func (c *URLController) HandlePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(shortURL))
+}
+
+func (c *URLController) HandleGet(w http.ResponseWriter, r *http.Request) {
+	shortID := strings.TrimPrefix(r.URL.Path, "/")
+	if shortID == "" {
+		http.Error(w, "not ID addded", http.StatusBadRequest)
+		return
+	}
+
+	originalURL, exists := c.service.GetOriginalURL(shortID)
+	if !exists {
+		http.Error(w, "URL not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Location", originalURL)
+	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 
 /*

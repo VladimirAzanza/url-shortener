@@ -25,3 +25,12 @@ func (s *URLService) ShortenURL(originalURL string) string {
 
 	return fmt.Sprintf("http://localhost:8080/%s", (shortID))
 }
+
+func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
+	originalURL, exists := s.storage[shortID]
+	if !exists {
+		return "", false
+	}
+
+	return originalURL, true
+}

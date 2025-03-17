@@ -17,6 +17,8 @@ func NewServer(
 			switch r.Method {
 			case http.MethodPost:
 				urlController.HandlePost(w, r)
+			case http.MethodGet:
+				urlController.HandleGet(w, r)
 			default:
 				http.Error(w, "method not allowed", http.StatusBadRequest)
 			}
