@@ -1,12 +1,37 @@
 package controller
 
 import (
-	"fmt"
 	"io"
 	"net/http"
-	"strings"
+
+	"github.com/VladimirAzanza/url-shortener/internal/services"
 )
 
+type URLController struct {
+	service *services.URLService
+}
+
+func NewURLController(service *services.URLService) *URLController {
+	return &URLController{service: service}
+}
+
+func (c *URLController) HandlePost(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	originalURL := string(body)
+	shortURL := c.service.ShortenURL(originalURL)
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(shortURL))
+}
+
+/*
 var urlStore = make(map[string]string, 0)
 
 func MainService(w http.ResponseWriter, r *http.Request) {
@@ -63,3 +88,4 @@ func handleGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Location", originalURL)
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
+*/
