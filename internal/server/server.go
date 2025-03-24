@@ -8,9 +8,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewServer(
-	urlController *controller.URLController,
-) *http.Server {
+func NewServer(urlController *controller.URLController) *http.Server {
 	return &http.Server{
 		Addr: ":8080",
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
