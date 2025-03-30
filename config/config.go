@@ -13,8 +13,8 @@ type Config struct {
 func NewConfig() *Config {
 	cfg := &Config{}
 
-	// cfg.loadFromEnv()
-	// cfg.parseFlags()
+	cfg.loadFromEnv()
+	cfg.parseFlags()
 	cfg.setDefaults()
 
 	return cfg
