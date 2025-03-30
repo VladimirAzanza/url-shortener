@@ -34,20 +34,11 @@ func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 }
 
 func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
-	fmt.Println("Get handler")
-	return nil
-	// shortID := strings.TrimPrefix(r.URL.Path, "/")
-	// if shortID == "" {
-	// 	http.Error(w, "not ID addded", http.StatusBadRequest)
-	// 	return
-	// }
+	shortID := ctx.Params("id")
 
-	// originalURL, exists := c.service.GetOriginalURL(shortID)
-	// if !exists {
-	// 	http.Error(w, "URL not found", http.StatusNotFound)
-	// 	return
-	// }
-
-	// w.Header().Set("Location", originalURL)
-	// w.WriteHeader(http.StatusTemporaryRedirect)
+	originalURL, exists := c.service.GetOriginalURL(shortID)
+	if !exists {
+		return ctx.Status(fiber.StatusNotFound).SendString("URL not found")
+	}
+	return ctx.Redirect(originalURL, fiber.StatusTemporaryRedirect)
 }

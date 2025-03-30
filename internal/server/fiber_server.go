@@ -11,8 +11,8 @@ import (
 func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	app := fiber.New()
 
-	app.Get("/", urlController.HandleGet)
-	app.Post("/:id", urlController.HandlePost)
+	app.Get("/:id", urlController.HandleGet)
+	app.Post("/", urlController.HandlePost)
 	return app
 }
 
