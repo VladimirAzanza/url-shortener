@@ -1,6 +1,9 @@
 package services
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type URLService struct {
 	storage map[string]string
@@ -8,22 +11,15 @@ type URLService struct {
 
 func NewURLService() *URLService {
 	return &URLService{
-		storage: make(map[string]string),
+		storage: make(map[string]string, 0),
 	}
 }
 
 func (s *URLService) ShortenURL(baseURL string, originalURL string) string {
-	shortID := "123"
-	_, exists := s.storage[shortID]
+	shortID := generateUniqueId(originalURL)
+	s.storage[shortID] = originalURL
 
-	if exists {
-		shortID += "10"
-		s.storage[shortID] = originalURL
-	} else {
-		s.storage[shortID] = originalURL
-	}
-
-	return fmt.Sprintf(baseURL, (shortID))
+	return fmt.Sprintf(baseURL, shortID)
 }
 
 func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
@@ -33,4 +29,8 @@ func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 	}
 
 	return originalURL, true
+}
+
+func generateUniqueId(originalURL string) string {
+	return fmt.Sprintf("%x%x", originalURL, time.Now().UnixNano())[:16]
 }
