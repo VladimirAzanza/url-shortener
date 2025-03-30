@@ -9,6 +9,8 @@ import (
 	"go.uber.org/fx"
 )
 
+// ./shortener -a :8081
+// SERVER_ADDRESS=:8082 ./shortener
 func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	app := fiber.New()
 
