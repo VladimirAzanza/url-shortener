@@ -1,6 +1,8 @@
 package services
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"time"
 )
@@ -32,7 +34,9 @@ func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 }
 
 func generateUniqueId(originalURL string) string {
-	f := fmt.Sprintf("%x", originalURL)[:8]
-	s := fmt.Sprintf("%x", time.Now().UnixNano())[:8]
-	return f + s
+	hash := sha256.Sum256([]byte(originalURL))
+	hashStr := hex.EncodeToString(hash[:])[:8]
+	// f := fmt.Sprintf("%x", originalURL)[:8]
+	timestamp := fmt.Sprintf("%x", time.Now().UnixNano())[:8]
+	return hashStr + timestamp
 }

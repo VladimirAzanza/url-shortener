@@ -40,6 +40,7 @@ func TestGetOriginalURL(t *testing.T) {
 		exists   bool
 	}{
 		{"Existing URL", shortID, testURL, true},
+		{"Non Existin URL", "", "", false},
 	}
 
 	for _, tt := range tests {
