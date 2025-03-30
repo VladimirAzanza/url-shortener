@@ -39,6 +39,9 @@ func hasFlags() bool {
 		if strings.HasPrefix(arg, "-a") {
 			return true
 		}
+		if strings.HasPrefix(arg, "-b") {
+			return true
+		}
 	}
 	return false
 }
