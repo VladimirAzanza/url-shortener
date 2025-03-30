@@ -12,7 +12,7 @@ func NewURLService() *URLService {
 	}
 }
 
-func (s *URLService) ShortenURL(originalURL string) string {
+func (s *URLService) ShortenURL(baseURL string, originalURL string) string {
 	shortID := "123"
 	_, exists := s.storage[shortID]
 
@@ -23,7 +23,7 @@ func (s *URLService) ShortenURL(originalURL string) string {
 		s.storage[shortID] = originalURL
 	}
 
-	return fmt.Sprintf("http://localhost:8080/%s", (shortID))
+	return fmt.Sprintf(baseURL, (shortID))
 }
 
 func (s *URLService) GetOriginalURL(shortID string) (string, bool) {

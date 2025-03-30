@@ -25,7 +25,7 @@ func (c *URLController) HandlePost(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	originalURL := string(body)
-	shortURL := c.service.ShortenURL(originalURL)
+	shortURL := c.service.ShortenURL("localhost:8080/", originalURL)
 
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)

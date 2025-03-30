@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/VladimirAzanza/url-shortener/internal/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,21 +14,11 @@ func NewFiberURLController(service *services.URLService) *FiberURLController {
 }
 
 func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
-	fmt.Println("Post handler")
-	return nil
-	// body, err := io.ReadAll(r.Body)
-	// if err != nil {
-	// 	http.Error(w, "invalid request body", http.StatusBadRequest)
-	// 	return
-	// }
-	// defer r.Body.Close()
+	baseURL := ctx.BaseURL()
+	originalURL := ctx.BodyRaw()
 
-	// originalURL := string(body)
-	// shortURL := c.service.ShortenURL(originalURL)
-
-	// w.Header().Set("Content-Type", "text/plain")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(shortURL))
+	return ctx.Status(fiber.StatusOK).
+		SendString(c.service.ShortenURL(baseURL, string(originalURL)))
 }
 
 func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
