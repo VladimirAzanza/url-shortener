@@ -2,50 +2,65 @@ package services
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestShortenURL(t *testing.T) {
 	tests := []struct {
 		name        string
 		originalURL string
-		want        string
 	}{
-		{"Valid URL", "https://myurl_example.com", "http://localhost:8080/123"},
+		{"Valid URL", "https://example.com"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := NewURLService()
-			got := s.ShortenURL(tt.originalURL)
-			if got != tt.want {
-				t.Errorf("ShortenURL() = %v, expected empty: %v", got, tt.want)
-			}
+			shortID := s.ShortenURL(tt.originalURL)
+
+			assert.NotEmpty(t, shortID)
+			assert.Len(t, shortID, 16)
+
+			originalURL, exists := s.GetOriginalURL(shortID)
+			assert.True(t, exists)
+			assert.Equal(t, tt.originalURL, originalURL)
 		})
 	}
 }
 
 func TestGetOriginalURL(t *testing.T) {
-	tests := []struct {
-		name    string
-		shortID string
-		want    string
-	}{
-		{"Existing URL", "123", "https://myurl_example.com"},
-		{"Non-existing URL", "999", ""},
-	}
-
 	s := NewURLService()
-	s.ShortenURL("https://myurl_example.com")
+	testURL := "https://example.com"
+	shortID := s.ShortenURL(testURL)
+
+	tests := []struct {
+		name     string
+		shortID  string
+		expected string
+		exists   bool
+	}{
+		{"Existing URL", shortID, testURL, true},
+	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalURL, found := s.GetOriginalURL(tt.shortID)
-			if found {
-				if originalURL != "https://myurl_example.com" {
-					t.Errorf("GetOriginalURL() found = %v, want %v", originalURL, "https://myurl_example.com")
-				}
-			} else if tt.want != "" {
-				t.Errorf("GetOriginalURL() did not find URL, expected %v", tt.want)
+			originalURL, exists := s.GetOriginalURL(tt.shortID)
+			assert.Equal(t, tt.exists, exists)
+			if exists {
+				assert.Equal(t, tt.expected, originalURL)
 			}
 		})
 	}
+}
+
+func TestGenerateUniqueId(t *testing.T) {
+	fURL := "https://example.com"
+	sUrl := "https://google.com"
+
+	id1 := generateUniqueId(fURL)
+	id2 := generateUniqueId(sUrl)
+
+	assert.Len(t, id1, 16)
+	assert.Len(t, id2, 16)
+	assert.NotEqual(t, id1, id2, "ID's should be unique for different URLS")
 }

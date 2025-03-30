@@ -1,6 +1,6 @@
-.PHONY: docs, gen, test, cover
+.PHONY: test, cover
 
-test: gen
+test:
 	go test -v ./...
 
 cover:
