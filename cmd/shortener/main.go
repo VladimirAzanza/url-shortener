@@ -11,9 +11,11 @@ func main() {
 	fx.New(
 		fx.Provide(
 			services.NewURLService,
-			controller.NewURLController,
-			server.NewServer,
+			// controller.NewURLController,
+			controller.NewFiberURLController,
+			//server.NewServer,
+			server.NewFiberServer,
 		),
-		fx.Invoke(server.StartServer),
+		fx.Invoke(server.StartFiberServer),
 	).Run()
 }

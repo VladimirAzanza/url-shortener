@@ -34,5 +34,4 @@ func StartServer(lc fx.Lifecycle, server *http.Server) {
 			return server.Shutdown(ctx)
 		},
 	})
-
 }
