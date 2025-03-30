@@ -2,7 +2,6 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"os"
 )
 
@@ -18,7 +17,6 @@ func NewConfig() *Config {
 	// cfg.parseFlags()
 	cfg.setDefaults()
 
-	fmt.Printf("Global configuration %+v", cfg)
 	return cfg
 }
 
