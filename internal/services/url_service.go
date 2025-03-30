@@ -32,5 +32,7 @@ func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 }
 
 func generateUniqueId(originalURL string) string {
-	return fmt.Sprintf("%x%x", originalURL, time.Now().UnixNano())[:16]
+	f := fmt.Sprintf("%x", originalURL)[:8]
+	s := fmt.Sprintf("%x", time.Now().UnixNano())[:8]
+	return f + s
 }
