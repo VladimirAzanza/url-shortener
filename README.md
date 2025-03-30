@@ -10,7 +10,7 @@ A high-performance URL shortening service built with Go and Fiber. This service 
     - Environment variables
     - Command-line flags (-a for SERVER_ADDRESS; -b for BASE_URL)
     - Default values (SERVER_ADDRESS = :8080 ; BASE_URL = localhost)
-    - High-performance Fiber web framework
+- High-performance Fiber web framework
 - Dependency injection with Uber FX
 - Comprehensive test coverage
 
