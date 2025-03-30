@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"os"
+	"strings"
 )
 
 type Config struct {
@@ -27,7 +28,19 @@ func (c *Config) parseFlags() {
 	flag.StringVar(
 		&c.BaseURL, "b", c.BaseURL, "Server address (env: BASE_URL)",
 	)
-	flag.Parse()
+	if hasFlags() {
+		flag.Parse()
+	}
+
+}
+
+func hasFlags() bool {
+	for _, arg := range os.Args[1:] {
+		if strings.HasPrefix(arg, "-a") {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Config) loadFromEnv() {
