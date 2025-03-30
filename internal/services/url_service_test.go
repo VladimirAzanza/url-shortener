@@ -58,8 +58,8 @@ func TestGenerateUniqueId(t *testing.T) {
 	fURL := "https://example.com"
 	sURL := "https://google.com"
 
-	id1 := generateUniqueId(fURL)
-	id2 := generateUniqueId(sURL)
+	id1 := generateUniqueID(fURL)
+	id2 := generateUniqueID(sURL)
 
 	assert.Len(t, id1, 16)
 	assert.Len(t, id2, 16)

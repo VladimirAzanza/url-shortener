@@ -18,7 +18,7 @@ func NewURLService() *URLService {
 }
 
 func (s *URLService) ShortenURL(originalURL string) string {
-	shortID := generateUniqueId(originalURL)
+	shortID := generateUniqueID(originalURL)
 	s.storage[shortID] = originalURL
 
 	return shortID
@@ -33,7 +33,7 @@ func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 	return originalURL, true
 }
 
-func generateUniqueId(originalURL string) string {
+func generateUniqueID(originalURL string) string {
 	hash := sha256.Sum256([]byte(originalURL))
 	hashStr := hex.EncodeToString(hash[:])[:8]
 	timestamp := fmt.Sprintf("%x", time.Now().UnixNano())[:8]
