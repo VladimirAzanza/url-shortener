@@ -36,8 +36,8 @@ func (c *Config) loadFromEnv() {
 	if address, exists := os.LookupEnv("SERVER_ADDRESS"); exists {
 		c.ServerAddress = address
 	}
-	if baseUrl, exists := os.LookupEnv("BASE_URL"); exists {
-		c.BaseURL = baseUrl
+	if baseURL, exists := os.LookupEnv("BASE_URL"); exists {
+		c.BaseURL = baseURL
 	}
 }
 
