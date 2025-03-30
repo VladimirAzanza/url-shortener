@@ -25,11 +25,11 @@ func (c *URLController) HandlePost(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	originalURL := string(body)
-	shortURL := c.service.ShortenURL("localhost:8080/", originalURL)
+	shortURL := c.service.ShortenURL(originalURL)
 
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(shortURL))
+	w.Write([]byte("localhost:8080/" + shortURL))
 }
 
 func (c *URLController) HandleGet(w http.ResponseWriter, r *http.Request) {

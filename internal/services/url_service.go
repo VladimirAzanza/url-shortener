@@ -15,11 +15,11 @@ func NewURLService() *URLService {
 	}
 }
 
-func (s *URLService) ShortenURL(baseURL string, originalURL string) string {
+func (s *URLService) ShortenURL(originalURL string) string {
 	shortID := generateUniqueId(originalURL)
 	s.storage[shortID] = originalURL
 
-	return fmt.Sprintf(baseURL, shortID)
+	return shortID
 }
 
 func (s *URLService) GetOriginalURL(shortID string) (string, bool) {

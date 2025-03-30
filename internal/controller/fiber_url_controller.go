@@ -16,9 +16,9 @@ func NewFiberURLController(service *services.URLService) *FiberURLController {
 func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 	baseURL := ctx.BaseURL()
 	originalURL := ctx.BodyRaw()
+	shortID := c.service.ShortenURL(string(originalURL))
 
-	return ctx.Status(fiber.StatusOK).
-		SendString(c.service.ShortenURL(baseURL, string(originalURL)))
+	return ctx.Status(fiber.StatusOK).SendString(baseURL + "/" + shortID)
 }
 
 func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
