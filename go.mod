@@ -3,7 +3,6 @@ module github.com/VladimirAzanza/url-shortener
 go 1.24.0
 
 require (
-	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/stretchr/testify v1.8.1
 	go.uber.org/fx v1.23.0
