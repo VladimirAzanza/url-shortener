@@ -36,7 +36,6 @@ func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 func generateUniqueId(originalURL string) string {
 	hash := sha256.Sum256([]byte(originalURL))
 	hashStr := hex.EncodeToString(hash[:])[:8]
-	// f := fmt.Sprintf("%x", originalURL)[:8]
 	timestamp := fmt.Sprintf("%x", time.Now().UnixNano())[:8]
 	return hashStr + timestamp
 }
