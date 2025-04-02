@@ -17,9 +17,7 @@ var Module = fx.Module(
 	fx.Supply(config.NewConfig()),
 	fx.Provide(
 		services.NewURLService,
-		// controller.NewURLController,
 		controller.NewFiberURLController,
-		//server.NewServer,
 		server.NewFiberServer,
 	),
 	fx.Invoke(server.StartFiberServer),
