@@ -5,6 +5,7 @@ import (
 
 	"github.com/VladimirAzanza/url-shortener/config"
 	"github.com/VladimirAzanza/url-shortener/internal/controller"
+	"github.com/VladimirAzanza/url-shortener/internal/middleware"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 )
@@ -13,6 +14,8 @@ import (
 // SERVER_ADDRESS=:8082 ./shortener
 func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	app := fiber.New()
+
+	app.Use(middleware.MiddlewareZerolog())
 
 	app.Get("/:id", urlController.HandleGet)
 	app.Post("/", urlController.HandlePost)
