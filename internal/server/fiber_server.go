@@ -4,9 +4,11 @@ import (
 	"context"
 
 	"github.com/VladimirAzanza/url-shortener/config"
+	_ "github.com/VladimirAzanza/url-shortener/docs"
 	"github.com/VladimirAzanza/url-shortener/internal/controller"
 	"github.com/VladimirAzanza/url-shortener/internal/middleware"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	"go.uber.org/fx"
 )
 
@@ -16,6 +18,8 @@ func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	app := fiber.New()
 
 	app.Use(middleware.MiddlewareZerolog())
+
+	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	app.Get("/:id", urlController.HandleGet)
 	app.Post("/", urlController.HandlePost)

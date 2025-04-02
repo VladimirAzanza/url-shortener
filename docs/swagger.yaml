@@ -1,0 +1,53 @@
+basePath: /
+host: localhost:8080
+info:
+  contact:
+    email: vladimirazanza@gmail.com
+  description: This is a sample swagger for URL Shortener
+  title: URL shortener API
+  version: "1.0"
+paths:
+  /:
+    post:
+      consumes:
+      - text/plain
+      description: Create a short URL from the original URL
+      parameters:
+      - description: Original URL to be shortened
+        in: body
+        name: originalUrl
+        required: true
+        schema:
+          type: string
+      produces:
+      - text/plain
+      responses:
+        "201":
+          description: Returns the shortened URL
+          schema:
+            type: string
+      summary: Shorten a URL
+      tags:
+      - URLs
+  /{id}:
+    get:
+      description: Redirects to the original URL using the short ID
+      parameters:
+      - description: Short URL ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "307":
+          description: Redirects to original URL
+        "404":
+          description: Not found if short ID doesn't exist
+          schema:
+            type: string
+      summary: Redirect to original URL
+      tags:
+      - URLs
+swagger: "2.0"

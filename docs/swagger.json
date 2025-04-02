@@ -1,0 +1,81 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample swagger for URL Shortener",
+        "title": "URL shortener API",
+        "contact": {
+            "email": "vladimirazanza@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "post": {
+                "description": "Create a short URL from the original URL",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "URLs"
+                ],
+                "summary": "Shorten a URL",
+                "parameters": [
+                    {
+                        "description": "Original URL to be shortened",
+                        "name": "originalUrl",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns the shortened URL",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/{id}": {
+            "get": {
+                "description": "Redirects to the original URL using the short ID",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "URLs"
+                ],
+                "summary": "Redirect to original URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short URL ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "307": {
+                        "description": "Redirects to original URL"
+                    },
+                    "404": {
+                        "description": "Not found if short ID doesn't exist",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
