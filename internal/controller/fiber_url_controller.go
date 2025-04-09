@@ -44,6 +44,7 @@ func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 		Result: fullURL,
 	}
 
+	log.Info().Msg("Successfully shortened the url, shortID" + response.Result)
 	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
