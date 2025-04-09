@@ -15,7 +15,7 @@ content-type: application/json
 }
 ###
 
-@shortID = @{{shortenAPI.response.body.result}}
+@shortID = @{{ shortenAPI.response.body.result }}
 
 ## GET ORIGINAL URL
 GET {{baseUrl}}/@{{shortID}} HTTP/1.1
