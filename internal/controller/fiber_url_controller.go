@@ -24,11 +24,28 @@ func NewFiberURLController(service *services.URLService) *FiberURLController {
 // @Tags URLs
 // @Accept plain
 // @Produce plain
+// @Param originalUrl body string true "Original URL to be shortened"
+// @Success 201 {string} string "Returns the shortened URL"
+// @Router / [post]
+func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
+	baseURL := ctx.BaseURL()
+	originalURL := ctx.BodyRaw()
+	shortID := c.service.ShortenURL(string(originalURL))
+
+	return ctx.Status(fiber.StatusCreated).SendString(baseURL + "/" + shortID)
+}
+
+// HandleAPIPost Post a URL to shorten
+// @Summary Shorten a URL
+// @Description Create a short URL from the original URL
+// @Tags URLs
+// @Accept plain
+// @Produce plain
 // @Param request body dto.ShortenRequestDTO true "Original URL to be shortened"
 // @Success 201 {object} dto.ShortenResponseDTO "Returns the shortened URL"
 // @Failure 500 {object} map[string]string "Failed to parse request"
 // @Router / [post]
-func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
+func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 	var shortenRequestDTO dto.ShortenRequestDTO
 	if err := ctx.BodyParser(&shortenRequestDTO); err != nil {
 		log.Err(err).Msg(constants.MsgFailedToParseBody)
