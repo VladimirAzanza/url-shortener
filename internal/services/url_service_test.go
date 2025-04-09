@@ -1,8 +1,10 @@
 package services
 
 import (
+	"context"
 	"testing"
 
+	"github.com/VladimirAzanza/url-shortener/internal/dto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +18,8 @@ func TestShortenURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := NewURLService()
-			shortID := s.ShortenURL(tt.originalURL)
+			req := &dto.ShortenRequestDTO{URL: tt.originalURL}
+			shortID := s.ShortenURL(context.Background(), req)
 
 			assert.NotEmpty(t, shortID)
 			assert.Len(t, shortID, 16)
@@ -31,7 +34,8 @@ func TestShortenURL(t *testing.T) {
 func TestGetOriginalURL(t *testing.T) {
 	s := NewURLService()
 	testURL := "https://example.com"
-	shortID := s.ShortenURL(testURL)
+	req := &dto.ShortenRequestDTO{URL: testURL}
+	shortID := s.ShortenURL(context.Background(), req)
 
 	tests := []struct {
 		name     string
