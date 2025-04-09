@@ -20,7 +20,14 @@ func NewURLService() *URLService {
 	}
 }
 
-func (s *URLService) ShortenURL(ctx context.Context, shortenRequest *dto.ShortenRequestDTO) string {
+func (s *URLService) ShortenURL(originalURL string) string {
+	shortID := generateUniqueID(originalURL)
+	s.storage[shortID] = originalURL
+
+	return shortID
+}
+
+func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.ShortenRequestDTO) string {
 	shortID := generateUniqueID(shortenRequest.URL)
 	s.storage[shortID] = shortenRequest.URL
 

@@ -54,7 +54,7 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 		})
 	}
 
-	shortID := c.service.ShortenURL(ctx.Context(), &shortenRequestDTO)
+	shortID := c.service.ShortenAPIURL(ctx.Context(), &shortenRequestDTO)
 
 	fullURL := fmt.Sprintf("%s/%s", ctx.BaseURL(), shortID)
 	response := dto.ShortenResponseDTO{
