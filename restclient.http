@@ -1,0 +1,23 @@
+## LOCAL = http://localhost:8080
+
+
+@baseUrl = http://localhost:8080
+
+###
+
+# @name shortenAPI
+## POST SHORTEN
+POST {{baseUrl}}/api/shorten HTTP/1.1
+content-type: application/json
+
+{
+    "url": "www.example.com"
+}
+###
+
+@shortID = @{{shortenAPI.response.body.result}}
+
+## GET ORIGINAL URL
+GET {{baseUrl}}/@{{shortID}} HTTP/1.1
+###
+
