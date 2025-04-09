@@ -33,11 +33,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Original URL to be shortened",
-                        "name": "originalUrl",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ShortenRequestDTO"
                         }
                     }
                 ],
@@ -45,7 +45,16 @@ const docTemplate = `{
                     "201": {
                         "description": "Returns the shortened URL",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ShortenResponseDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to parse request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -80,6 +89,24 @@ const docTemplate = `{
                             "type": "string"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ShortenRequestDTO": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ShortenResponseDTO": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "string"
                 }
             }
         }
