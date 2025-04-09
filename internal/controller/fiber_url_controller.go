@@ -1,6 +1,10 @@
 package controller
 
 import (
+	"fmt"
+
+	"github.com/VladimirAzanza/url-shortener/internal/constants"
+	"github.com/VladimirAzanza/url-shortener/internal/dto"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
@@ -24,11 +28,23 @@ func NewFiberURLController(service *services.URLService) *FiberURLController {
 // @Success 201 {string} string "Returns the shortened URL"
 // @Router / [post]
 func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
-	baseURL := ctx.BaseURL()
-	originalURL := ctx.BodyRaw()
-	shortID := c.service.ShortenURL(string(originalURL))
+	var shortenRequestDTO dto.ShortenRequestDTO
+	if err := ctx.BodyParser(&shortenRequestDTO); err != nil {
+		log.Err(err).Msg(constants.MsgFailedToParseBody)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": constants.MsgFailedToParseBody,
+		})
+	}
 
-	return ctx.Status(fiber.StatusCreated).SendString(baseURL + "/" + shortID)
+	//originalURL := ctx.BodyRaw()
+	shortID := c.service.ShortenURL(ctx.Context(), &shortenRequestDTO)
+
+	fullURL := fmt.Sprintf("%s/%s", ctx.BaseURL(), shortID)
+	response := dto.ShortenResponseDTO{
+		Result: fullURL,
+	}
+
+	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
 // HandleGet godoc
