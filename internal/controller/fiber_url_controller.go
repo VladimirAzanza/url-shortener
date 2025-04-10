@@ -62,19 +62,19 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 		Result: fullURL,
 	}
 
-	_ = encodeToJSON(map[string]string{"example": "test"})
-
-	log.Info().Msg("Successfully shortened the url, shortID" + response.Result)
-	return ctx.Status(fiber.StatusCreated).JSON(response)
-}
-
-func encodeToJSON(v interface{}) []byte {
-	data, err := json.Marshal(v)
+	jsonBytes, err := json.Marshal(response)
 	if err != nil {
-		log.Debug().Msg("Function used only to pass iter7 test of YP")
-		return nil
+		log.Err(err).Msg("Failed to marshal response")
+		return ctx.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
-	return data
+
+	log.Info().Msg("Successfully shortened the url, shortID: " + response.Result)
+	ctx.Status(fiber.StatusCreated)
+	ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	return ctx.Send(jsonBytes)
+
+	// log.Info().Msg("Successfully shortened the url, shortID" + response.Result)
+	// return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
 // HandleGet godoc
