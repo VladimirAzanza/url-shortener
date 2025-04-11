@@ -1,4 +1,15 @@
 basePath: /
+definitions:
+  dto.ShortenRequestDTO:
+    properties:
+      url:
+        type: string
+    type: object
+  dto.ShortenResponseDTO:
+    properties:
+      result:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -15,17 +26,23 @@ paths:
       parameters:
       - description: Original URL to be shortened
         in: body
-        name: originalUrl
+        name: request
         required: true
         schema:
-          type: string
+          $ref: '#/definitions/dto.ShortenRequestDTO'
       produces:
       - text/plain
       responses:
         "201":
           description: Returns the shortened URL
           schema:
-            type: string
+            $ref: '#/definitions/dto.ShortenResponseDTO'
+        "500":
+          description: Failed to parse request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
       summary: Shorten a URL
       tags:
       - URLs

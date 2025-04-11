@@ -23,6 +23,12 @@ func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 
 	app.Get("/:id", urlController.HandleGet)
 	app.Post("/", urlController.HandlePost)
+
+	api := app.Group("/api")
+	{
+		api.Post("/shorten", urlController.HandleAPIPost)
+	}
+
 	return app
 }
 
