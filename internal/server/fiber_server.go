@@ -18,20 +18,20 @@ import (
 func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	app := fiber.New()
 
-	compressionMiddleware := compress.New(compress.Config{
+	app.Use(compress.New(compress.Config{
 		Level: compress.LevelBestSpeed,
-	})
+	}))
 
 	app.Use(middleware.MiddlewareZerolog())
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	app.Get("/:id", urlController.HandleGet)
-	app.Post("/", compressionMiddleware, urlController.HandlePost)
+	app.Post("/", urlController.HandlePost)
 
 	api := app.Group("/api")
 	{
-		api.Post("/shorten", compressionMiddleware, urlController.HandleAPIPost)
+		api.Post("/shorten", urlController.HandleAPIPost)
 	}
 
 	return app
