@@ -9,6 +9,8 @@ import (
 
 	"github.com/VladimirAzanza/url-shortener/config"
 	"github.com/VladimirAzanza/url-shortener/internal/dto"
+	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 type URLRecord struct {
@@ -33,6 +35,8 @@ func (s *URLService) ShortenURL(originalURL string) string {
 	shortID := generateUniqueID(originalURL)
 	s.storage[shortID] = originalURL
 
+	s.saveRecord(shortID, originalURL)
+
 	return shortID
 }
 
@@ -43,11 +47,18 @@ func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.Shor
 func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 	originalURL, exists := s.storage[shortID]
 	return originalURL, exists
-	// if !exists {
-	// 	return "", false
-	// }
+}
 
-	// return originalURL, true
+func (s *URLService) saveRecord(shortID, originalURL string) {
+	if s.cfg.FileStoragePath == "" {
+		log.Error().Msg("File storage path is empty")
+	}
+
+	urlRecord := URLRecord{
+		UUID:        uuid.New().String(),
+		ShortURL:    shortID,
+		OriginalURL: originalURL,
+	}
 }
 
 func generateUniqueID(originalURL string) string {
