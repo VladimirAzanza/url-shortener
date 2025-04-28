@@ -7,15 +7,24 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/VladimirAzanza/url-shortener/config"
 	"github.com/VladimirAzanza/url-shortener/internal/dto"
 )
 
+type URLRecord struct {
+	UUID        string `json:"uuid"`
+	ShortURL    string `json:"short_url"`
+	OriginalURL string `json:"original_url"`
+}
+
 type URLService struct {
+	cfg     *config.Config
 	storage map[string]string
 }
 
-func NewURLService() *URLService {
+func NewURLService(cfg *config.Config) *URLService {
 	return &URLService{
+		cfg:     cfg,
 		storage: make(map[string]string, 0),
 	}
 }
@@ -28,10 +37,11 @@ func (s *URLService) ShortenURL(originalURL string) string {
 }
 
 func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.ShortenRequestDTO) string {
-	shortID := generateUniqueID(shortenRequest.URL)
-	s.storage[shortID] = shortenRequest.URL
+	return s.ShortenURL(shortenRequest.URL)
+	// shortID := generateUniqueID(shortenRequest.URL)
+	// s.storage[shortID] = shortenRequest.URL
 
-	return shortID
+	// return shortID
 }
 
 func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
