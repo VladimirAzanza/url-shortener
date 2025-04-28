@@ -38,19 +38,16 @@ func (s *URLService) ShortenURL(originalURL string) string {
 
 func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.ShortenRequestDTO) string {
 	return s.ShortenURL(shortenRequest.URL)
-	// shortID := generateUniqueID(shortenRequest.URL)
-	// s.storage[shortID] = shortenRequest.URL
-
-	// return shortID
 }
 
 func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 	originalURL, exists := s.storage[shortID]
-	if !exists {
-		return "", false
-	}
+	return originalURL, exists
+	// if !exists {
+	// 	return "", false
+	// }
 
-	return originalURL, true
+	// return originalURL, true
 }
 
 func generateUniqueID(originalURL string) string {
