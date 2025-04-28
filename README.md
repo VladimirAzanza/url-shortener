@@ -23,7 +23,7 @@ cd url-shortener
 ```
 
 ```bash
-go build -o shortener cmd/shortener/main.go
+go build -o cmd/shortener/shortener cmd/shortener/main.go
 ```
 
 
@@ -45,6 +45,12 @@ Using environment variables:
 ```bash
 SERVER_ADDRESS=:8082 BASE_URL=http://other-domain.com ./shortener
 ```
+
+### Flags 
+
+- (-a) : port
+- (-b) : host
+- (-f) : file storage path
 
 ### 1. Shorten a URL
 
