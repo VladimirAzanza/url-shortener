@@ -40,6 +40,10 @@ Using command-line flags:
 ```bash
 ./shortener -a :8081 -b http://my-domain.com
 ```
+Example2:
+```bash
+cmd/shortener/shortener -f ./files/records.json
+```
 
 Using environment variables:
 ```bash
