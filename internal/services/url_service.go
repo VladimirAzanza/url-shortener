@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/VladimirAzanza/url-shortener/config"
@@ -52,12 +54,31 @@ func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
 func (s *URLService) saveRecord(shortID, originalURL string) {
 	if s.cfg.FileStoragePath == "" {
 		log.Error().Msg("File storage path is empty")
+		return
 	}
 
 	urlRecord := URLRecord{
 		UUID:        uuid.New().String(),
 		ShortURL:    shortID,
 		OriginalURL: originalURL,
+	}
+
+	file, err := os.OpenFile(s.cfg.FileStoragePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to open storage file")
+		return
+	}
+	defer file.Close()
+
+	data, err := json.Marshal(urlRecord)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to Marshal url record")
+		return
+	}
+
+	if _, err := file.WriteString(string(data) + "\n"); err != nil {
+		log.Error().Err(err).Msg("Failed to write record")
+		return
 	}
 }
 
