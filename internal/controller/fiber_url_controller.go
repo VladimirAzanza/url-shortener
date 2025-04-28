@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/VladimirAzanza/url-shortener/internal/constants"
@@ -62,19 +61,8 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 		Result: fullURL,
 	}
 
-	jsonBytes, err := json.Marshal(response)
-	if err != nil {
-		log.Err(err).Msg("Failed to marshal response")
-		return ctx.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
-	}
-
-	log.Info().Msg("Successfully shortened the url, shortID: " + response.Result)
-	ctx.Status(fiber.StatusCreated)
-	ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
-	return ctx.Send(jsonBytes)
-
-	// log.Info().Msg("Successfully shortened the url, shortID" + response.Result)
-	// return ctx.Status(fiber.StatusCreated).JSON(response)
+	log.Info().Msg("Successfully shortened the url, shortID" + response.Result)
+	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
 // HandleGet godoc

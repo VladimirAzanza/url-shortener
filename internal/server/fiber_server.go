@@ -8,6 +8,7 @@ import (
 	"github.com/VladimirAzanza/url-shortener/internal/controller"
 	"github.com/VladimirAzanza/url-shortener/internal/middleware"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/swagger"
 	"go.uber.org/fx"
 )
@@ -16,6 +17,10 @@ import (
 // SERVER_ADDRESS=:8082 ./shortener
 func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	app := fiber.New()
+
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
+	}))
 
 	app.Use(middleware.MiddlewareZerolog())
 
