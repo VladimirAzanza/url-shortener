@@ -4,9 +4,14 @@ import (
 	"context"
 	"testing"
 
+	"github.com/VladimirAzanza/url-shortener/config"
 	"github.com/VladimirAzanza/url-shortener/internal/dto"
 	"github.com/stretchr/testify/assert"
 )
+
+func getTestConfig() *config.Config {
+	return &config.Config{}
+}
 
 func TestShortenURL(t *testing.T) {
 	tests := []struct {
@@ -17,7 +22,7 @@ func TestShortenURL(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewURLService()
+			s := NewURLService(getTestConfig())
 			shortID := s.ShortenURL(tt.originalURL)
 
 			assert.NotEmpty(t, shortID)
@@ -39,7 +44,7 @@ func TestShortenAPIURL(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewURLService()
+			s := NewURLService(getTestConfig())
 			req := &dto.ShortenRequestDTO{URL: tt.originalURL}
 			shortID := s.ShortenAPIURL(context.Background(), req)
 
@@ -54,7 +59,7 @@ func TestShortenAPIURL(t *testing.T) {
 }
 
 func TestGetOriginalURL(t *testing.T) {
-	s := NewURLService()
+	s := NewURLService(getTestConfig())
 	testURL := "https://example.com"
 	shortID := s.ShortenURL(testURL)
 
@@ -80,7 +85,7 @@ func TestGetOriginalURL(t *testing.T) {
 }
 
 func TestGetOriginalAPIURL(t *testing.T) {
-	s := NewURLService()
+	s := NewURLService(getTestConfig())
 	testURL := "https://example.com"
 	req := &dto.ShortenRequestDTO{URL: testURL}
 	shortID := s.ShortenAPIURL(context.Background(), req)

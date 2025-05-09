@@ -29,3 +29,5 @@ var Module = fx.Module(
 	),
 	fx.Invoke(server.StartFiberServer),
 )
+
+// TIPE LOCATION
