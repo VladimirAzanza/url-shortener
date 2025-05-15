@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"time"
 
 	"github.com/VladimirAzanza/url-shortener/config"
 	_ "github.com/VladimirAzanza/url-shortener/docs"
@@ -16,7 +17,13 @@ import (
 // ./shortener -a :8081
 // SERVER_ADDRESS=:8082 ./shortener
 func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  30 * time.Second,
+		//  Max body limit set to 10 MB
+		BodyLimit: 10 * 1024 * 1024,
+	})
 
 	app.Use(compress.New(compress.Config{
 		Level: compress.LevelBestSpeed,
