@@ -88,6 +88,12 @@ const docTemplate = `{
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    "408": {
+                        "description": "Request timeout",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }

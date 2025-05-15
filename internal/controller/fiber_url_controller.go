@@ -76,6 +76,7 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 // @Param id path string true "Short URL ID"
 // @Success 307 "Redirects to original URL"
 // @Failure 404 {string} string "Not found if short ID doesn't exist"
+// @Failure 408 {string} string "Request timeout"
 // @Router /{id} [get]
 func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
 	shortID := ctx.Params("id")
