@@ -38,7 +38,6 @@ func (s *URLService) ShortenURL(ctx context.Context, originalURL string) string 
 	s.storage[shortID] = originalURL
 
 	s.saveRecord(shortID, originalURL)
-
 	return shortID
 }
 
@@ -47,8 +46,16 @@ func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.Shor
 }
 
 func (s *URLService) GetOriginalURL(ctx context.Context, shortID string) (string, bool) {
-	originalURL, exists := s.storage[shortID]
-	return originalURL, exists
+	timer := time.NewTimer(100 * time.Millisecond)
+	defer timer.Stop()
+
+	select {
+	case <-timer.C:
+		originalURL, exists := s.storage[shortID]
+		return originalURL, exists
+	case <-ctx.Done():
+		return "", false
+	}
 }
 
 func (s *URLService) saveRecord(shortID, originalURL string) {

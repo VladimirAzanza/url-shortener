@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	"github.com/VladimirAzanza/url-shortener/internal/constants"
 	"github.com/VladimirAzanza/url-shortener/internal/dto"
@@ -77,10 +80,21 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
 	shortID := ctx.Params("id")
 
-	originalURL, exists := c.service.GetOriginalURL(ctx.UserContext(), shortID)
+	reqCtx, cancel := context.WithTimeout(ctx.UserContext(), 1*time.Second)
+	defer cancel()
+
+	originalURL, exists := c.service.GetOriginalURL(reqCtx, shortID)
+	if err := reqCtx.Err(); err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			log.Warn().Str("shortID", shortID).Msg("Request timeout exceeded")
+			return ctx.Status(fiber.StatusRequestTimeout).SendString("Request timeout")
+		}
+		return ctx.Status(fiber.StatusInternalServerError).SendString("Internal server error")
+	}
 	if !exists {
 		return ctx.Status(fiber.StatusNotFound).SendString("URL not found")
 	}
+
 	log.Info().Str("shortID", shortID).Str("originalURL", originalURL).Msg("Redirect to original URL")
 	return ctx.Redirect(originalURL, fiber.StatusTemporaryRedirect)
 }

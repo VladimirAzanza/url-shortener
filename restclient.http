@@ -20,13 +20,13 @@ POST {{baseUrl}}/api/shorten HTTP/1.1
 content-type: application/json
 
 {
-    "url": "www.example2.com"
+    "url": "http://httpbin.org/delay/3"
 }
 ###
 
 @shortID = {{ shortenAPI.response.body.result }}
 
 ## GET ORIGINAL URL
-GET {{baseUrl}}/{{ shortID }} HTTP/1.1
+GET {{ shortID }} HTTP/1.1
 ###
 
