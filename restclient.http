@@ -20,7 +20,7 @@ POST {{baseUrl}}/api/shorten HTTP/1.1
 content-type: application/json
 
 {
-    "url": "www.example.com"
+    "url": "www.example2.com"
 }
 ###
 

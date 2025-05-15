@@ -30,4 +30,7 @@ var Module = fx.Module(
 	fx.Invoke(server.StartFiberServer),
 )
 
-// TIPE LOCATION
+// Agregar contextos a todos los handlers
+// Agregar mock uber y testear los controllers
+// Agregar a la configuracion la posibilidad de iniciar la base de datos con sqlite o postgresql
+// Get /ping -> 200 cuando se ha iniciado correctamente la conexion con la base de datos, 500 cuando no

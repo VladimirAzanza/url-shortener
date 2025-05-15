@@ -30,7 +30,7 @@ func NewFiberURLController(service *services.URLService) *FiberURLController {
 func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 	baseURL := ctx.BaseURL()
 	originalURL := ctx.BodyRaw()
-	shortID := c.service.ShortenURL(string(originalURL))
+	shortID := c.service.ShortenURL(ctx.UserContext(), string(originalURL))
 
 	return ctx.Status(fiber.StatusCreated).SendString(baseURL + "/" + shortID)
 }
@@ -54,7 +54,7 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 		})
 	}
 
-	shortID := c.service.ShortenAPIURL(ctx.Context(), &shortenRequestDTO)
+	shortID := c.service.ShortenAPIURL(ctx.UserContext(), &shortenRequestDTO)
 
 	fullURL := fmt.Sprintf("%s/%s", ctx.BaseURL(), shortID)
 	response := dto.ShortenResponseDTO{
@@ -77,7 +77,7 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
 	shortID := ctx.Params("id")
 
-	originalURL, exists := c.service.GetOriginalURL(shortID)
+	originalURL, exists := c.service.GetOriginalURL(ctx.UserContext(), shortID)
 	if !exists {
 		return ctx.Status(fiber.StatusNotFound).SendString("URL not found")
 	}

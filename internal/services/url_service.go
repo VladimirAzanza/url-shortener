@@ -33,7 +33,7 @@ func NewURLService(cfg *config.Config) *URLService {
 	}
 }
 
-func (s *URLService) ShortenURL(originalURL string) string {
+func (s *URLService) ShortenURL(ctx context.Context, originalURL string) string {
 	shortID := generateUniqueID(originalURL)
 	s.storage[shortID] = originalURL
 
@@ -43,10 +43,10 @@ func (s *URLService) ShortenURL(originalURL string) string {
 }
 
 func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.ShortenRequestDTO) string {
-	return s.ShortenURL(shortenRequest.URL)
+	return s.ShortenURL(ctx, shortenRequest.URL)
 }
 
-func (s *URLService) GetOriginalURL(shortID string) (string, bool) {
+func (s *URLService) GetOriginalURL(ctx context.Context, shortID string) (string, bool) {
 	originalURL, exists := s.storage[shortID]
 	return originalURL, exists
 }
