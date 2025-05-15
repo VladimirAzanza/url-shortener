@@ -85,13 +85,18 @@ func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
 	defer cancel()
 
 	originalURL, exists := c.service.GetOriginalURL(reqCtx, shortID)
-	if err := reqCtx.Err(); err != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
-			log.Warn().Str("shortID", shortID).Msg("Request timeout exceeded")
-			return ctx.Status(fiber.StatusRequestTimeout).SendString("Request timeout")
-		}
-		return ctx.Status(fiber.StatusInternalServerError).SendString("Internal server error")
+	switch err := reqCtx.Err(); {
+	case errors.Is(err, context.DeadlineExceeded):
+		log.Warn().Str("shortID", shortID).Msg("Request timeout exceeded (server-side)")
+		return ctx.Status(fiber.StatusRequestTimeout).SendString("Request timeout")
+	case errors.Is(err, context.Canceled):
+		log.Warn().Str("shortID", shortID).Msg("Request canceled by client")
+		return ctx.Status(499).SendString("Client closed connection")
+	case err != nil:
+		log.Error().Err(err).Msg("Unexpected Error")
+		return ctx.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
+
 	if !exists {
 		return ctx.Status(fiber.StatusNotFound).SendString("URL not found")
 	}
