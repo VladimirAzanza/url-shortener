@@ -52,9 +52,12 @@ SERVER_ADDRESS=:8082 BASE_URL=http://other-domain.com ./shortener
 
 ### Flags 
 
+./shortener -h (to see what means each flag)
+
 - (-a) : port
 - (-b) : host
 - (-f) : file storage path
+- (-dt): database type (sqlite|postgres)
 
 ### 1. Shorten a URL
 
@@ -109,3 +112,4 @@ make cover
 
 - Go 1.24.0
 - Make (optional)
+- SQLite : https://www.sqlite.org/download.html

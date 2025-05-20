@@ -20,7 +20,7 @@ POST {{baseUrl}}/api/shorten HTTP/1.1
 content-type: application/json
 
 {
-    "url": "http://httpbin.org/delay/3"
+    "url": "http://httpbin.org/delay/2"
 }
 ###
 

@@ -4,6 +4,7 @@ import (
 	"github.com/VladimirAzanza/url-shortener/config"
 	_ "github.com/VladimirAzanza/url-shortener/docs"
 	"github.com/VladimirAzanza/url-shortener/internal/controller"
+	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
 	"go.uber.org/fx"
@@ -23,6 +24,7 @@ var Module = fx.Module(
 	"main",
 	fx.Supply(config.NewConfig()),
 	fx.Provide(
+		repo.NewDB,
 		services.NewURLService,
 		controller.NewFiberURLController,
 		server.NewFiberServer,
@@ -30,7 +32,6 @@ var Module = fx.Module(
 	fx.Invoke(server.StartFiberServer),
 )
 
-// Agregar contextos a todos los handlers
 // Agregar mock uber y testear los controllers
 // Agregar a la configuracion la posibilidad de iniciar la base de datos con sqlite o postgresql
 // Get /ping -> 200 cuando se ha iniciado correctamente la conexion con la base de datos, 500 cuando no
