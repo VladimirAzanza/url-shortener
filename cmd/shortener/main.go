@@ -7,6 +7,7 @@ import (
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
+	_ "github.com/mattn/go-sqlite3"
 	"go.uber.org/fx"
 )
 

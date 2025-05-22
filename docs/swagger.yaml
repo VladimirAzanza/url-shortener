@@ -71,4 +71,27 @@ paths:
       summary: Redirect to original URL
       tags:
       - URLs
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Ping to the DB
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Can not connect to the Database
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Verifies the connection to the DB
+      tags:
+      - DB
 swagger: "2.0"

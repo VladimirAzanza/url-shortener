@@ -60,6 +60,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/ping": {
+            "get": {
+                "description": "Ping to the DB",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DB"
+                ],
+                "summary": "Verifies the connection to the DB",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Can not connect to the Database",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/{id}": {
             "get": {
                 "description": "Redirects to the original URL using the short ID",

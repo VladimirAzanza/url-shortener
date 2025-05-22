@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -15,10 +16,14 @@ import (
 
 type FiberURLController struct {
 	service *services.URLService
+	db      *sql.DB
 }
 
-func NewFiberURLController(service *services.URLService) *FiberURLController {
-	return &FiberURLController{service: service}
+func NewFiberURLController(service *services.URLService, db *sql.DB) *FiberURLController {
+	return &FiberURLController{
+		service: service,
+		db:      db,
+	}
 }
 
 // HandlePost Post a URL to shorten
@@ -36,6 +41,26 @@ func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 	shortID := c.service.ShortenURL(ctx.UserContext(), string(originalURL))
 
 	return ctx.Status(fiber.StatusCreated).SendString(baseURL + "/" + shortID)
+}
+
+// @Summary Verifies the connection to the DB
+// @Description Ping to the DB
+// @Tags DB
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]string "Success"
+// @Failure 500 {object} map[string]string "Can not connect to the Database"
+// @Router /ping [get]
+func (c *FiberURLController) GetDBPing(ctx *fiber.Ctx) error {
+	if err := c.db.Ping(); err != nil {
+		return ctx.Status(fiber.StatusBadGateway).JSON(fiber.Map{
+			"message": "Can not connect to the Database",
+			"error":   err.Error(),
+		})
+	}
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status": "success",
+	})
 }
 
 // HandleAPIPost Post a URL to shorten

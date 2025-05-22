@@ -3,18 +3,21 @@ package repo
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/VladimirAzanza/url-shortener/config"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/rs/zerolog/log"
 )
 
 func NewDB(cfg *config.Config) (*sql.DB, error) {
-	var db *sql.DB
-	var err error
+	var (
+		db  *sql.DB
+		err error
+	)
 
 	switch cfg.DatabaseType {
 	case "sqlite":
-		db, err = sql.Open("sqlite", cfg.DatabaseDSN)
+		db, err = sql.Open("sqlite3", cfg.DatabaseDSN)
 	case "postgres":
 		db, err = sql.Open("postgres", cfg.DatabaseDSN)
 	default:
