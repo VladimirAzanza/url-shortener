@@ -19,10 +19,10 @@ cmd/shortener/shortener
 vendor/
 
 # IDEs directories
-.idea
-.vscode
+.idea/
+.vscode/
 
 .json
 
 # DB
-.db
+*.db
