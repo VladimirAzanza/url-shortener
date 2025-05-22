@@ -26,3 +26,4 @@ vendor/
 
 # DB
 *.db
+urlshortener.db
