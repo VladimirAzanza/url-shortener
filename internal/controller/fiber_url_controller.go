@@ -52,7 +52,10 @@ func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 // @Failure 500 {object} map[string]string "Can not connect to the Database"
 // @Router /ping [get]
 func (c *FiberURLController) GetDBPing(ctx *fiber.Ctx) error {
-	if err := c.db.Ping(); err != nil {
+	pingCtx, cancel := context.WithTimeout(ctx.Context(), 5*time.Second)
+	defer cancel()
+
+	if err := c.db.PingContext(pingCtx); err != nil {
 		return ctx.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"message": "Can not connect to the Database",
 			"error":   err.Error(),
