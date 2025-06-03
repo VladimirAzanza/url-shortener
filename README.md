@@ -135,3 +135,27 @@ Check for existence of the database
 ```bash
 sudo -u postgres psql -U postgres -c "\l"
 ```
+
+Make migrations (PostgreSQL):
+```bash
+sudo -u postgres psql -d urlshortener
+
+CREATE TABLE short_urls (
+    uuid UUID PRIMARY KEY,
+    short_url VARCHAR(255) NOT NULL UNIQUE,
+    original_url TEXT NOT NULL UNIQUE
+);
+
+```
+
+Make migrations (SQLite):
+```bash
+sqlite3 urlshortener.db
+
+CREATE TABLE short_urls (
+    uuid UUID PRIMARY KEY,
+    short_url VARCHAR(255) NOT NULL UNIQUE,
+    original_url TEXT NOT NULL UNIQUE
+);
+```
+

@@ -14,7 +14,7 @@ GET {{baseUrl}}/ping HTTP/1.1
 POST {{baseUrl}} HTTP/1.1
 content-type: text/plain
 
- "www.example2.com"
+www.example2.com
 
 ###
 
