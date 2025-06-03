@@ -56,7 +56,7 @@ func hasFlags() bool {
 		if strings.HasPrefix(arg, "-f") {
 			return true
 		}
-		if strings.HasPrefix(arg, "-d") {
+		if strings.HasPrefix(arg, "-dt") {
 			return true
 		}
 		if strings.HasPrefix(arg, "-dsn") {

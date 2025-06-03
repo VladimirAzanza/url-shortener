@@ -35,3 +35,25 @@ var Module = fx.Module(
 
 // Agregar mock uber y testear los controllers
 // Probar con postgresql
+// Agregar el guardado de datos en la BD. Agregar un flag para que el usuario elija donde guardar los datos, bD o file.json
+// Agregar tests de benchmarking
+//  POST /api/shorten/batch -> request (agregar tx.begin, commit, rollback):
+// [
+//     {
+//         "correlation_id": "<строковый идентификатор>",
+//         "original_url": "<URL для сокращения>"
+//     },
+//     ...
+// ]
+
+// response:
+// 	[
+//     {
+//         "correlation_id": "<строковый идентификатор из объекта запроса>",
+//         "short_url": "<результирующий сокращённый URL>"
+//     },
+//     ...
+// ]
+
+// Intentar usar errors is errores as y join => revisar increment 13
+// investigar sobre sqlc
