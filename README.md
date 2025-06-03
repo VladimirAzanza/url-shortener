@@ -113,3 +113,25 @@ make cover
 - Go 1.24.0
 - Make (optional)
 - SQLite : https://www.sqlite.org/download.html
+- PostgreSQL
+
+## Create Database with PostgreSQL
+
+```bash
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres psql
+```
+
+Then set the password-> postgres=# \password postgres
+Quit -> \q
+
+```bash
+sudo -i -u postgres
+psql -U postgres
+```
+
+Then create database -> postgres=# create database urlshortener
+Check for existence of the database
+```bash
+sudo -u postgres psql -U postgres -c "\l"
+```

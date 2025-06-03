@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/VladimirAzanza/url-shortener/config"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog/log"
 )

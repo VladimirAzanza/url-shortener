@@ -7,6 +7,7 @@ import (
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"go.uber.org/fx"
 )
@@ -34,7 +35,6 @@ var Module = fx.Module(
 )
 
 // Agregar mock uber y testear los controllers
-// Probar con postgresql
 // Agregar el guardado de datos en la BD. Agregar un flag para que el usuario elija donde guardar los datos, bD o file.json
 // Agregar tests de benchmarking
 //  POST /api/shorten/batch -> request (agregar tx.begin, commit, rollback):
