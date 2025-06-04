@@ -132,3 +132,32 @@ func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
 	log.Info().Str("shortID", shortID).Str("originalURL", originalURL).Msg("Redirect to original URL")
 	return ctx.Redirect(originalURL, fiber.StatusTemporaryRedirect)
 }
+
+func (c *FiberURLController) HandleAPIPostBatch(ctx *fiber.Ctx) error {
+	var batchRequestDTO []dto.BatchRequestDTO
+	if err := ctx.BodyParser(&batchRequestDTO); err != nil {
+		log.Err(err).Msg(constants.MsgFailedToParseBody)
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": constants.MsgFailedToParseBody,
+		})
+	}
+
+	if len(batchRequestDTO) == 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "empty batch",
+		})
+	}
+
+	responses := make([]dto.BatchResponseDTO, 0, len(batchRequestDTO))
+	for _, req := range batchRequestDTO {
+		// add err to response to services
+		shortID := c.service.ShortenURL(ctx.UserContext(), req.OriginalURL)
+
+		responses = append(responses, dto.BatchResponseDTO{
+			CorrelationID: req.CorrelationID,
+			ShortURL:      fmt.Sprintf("%s/%s", ctx.BaseURL(), shortID),
+		})
+	}
+	return ctx.Status(fiber.StatusCreated).JSON(responses)
+
+}

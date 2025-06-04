@@ -41,6 +41,7 @@ func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	api := app.Group("/api")
 	{
 		api.Post("/shorten", urlController.HandleAPIPost)
+		api.Post("/shorten/batch", urlController.HandleAPIPostBatch)
 	}
 
 	return app
