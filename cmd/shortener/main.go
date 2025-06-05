@@ -5,6 +5,7 @@ import (
 	_ "github.com/VladimirAzanza/url-shortener/docs"
 	"github.com/VladimirAzanza/url-shortener/internal/controller"
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
+	"github.com/VladimirAzanza/url-shortener/internal/repo/sqlite"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
 	_ "github.com/lib/pq"
@@ -27,6 +28,7 @@ var Module = fx.Module(
 	fx.Supply(config.NewConfig()),
 	fx.Provide(
 		repo.NewDB,
+		sqlite.NewSQLiteRepository,
 		services.NewURLService,
 		controller.NewFiberURLController,
 		server.NewFiberServer,

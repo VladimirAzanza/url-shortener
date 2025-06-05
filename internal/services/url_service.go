@@ -11,6 +11,7 @@ import (
 
 	"github.com/VladimirAzanza/url-shortener/config"
 	"github.com/VladimirAzanza/url-shortener/internal/dto"
+	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 )
@@ -22,14 +23,16 @@ type URLRecord struct {
 }
 
 type URLService struct {
-	cfg     *config.Config
-	storage map[string]string
+	cfg        *config.Config
+	storage    map[string]string
+	repoSQLite repo.ISQLiteStorage
 }
 
-func NewURLService(cfg *config.Config) *URLService {
+func NewURLService(cfg *config.Config, repoSQLite repo.ISQLiteStorage) *URLService {
 	return &URLService{
-		cfg:     cfg,
-		storage: make(map[string]string, 0),
+		cfg:        cfg,
+		storage:    make(map[string]string, 0),
+		repoSQLite: repoSQLite,
 	}
 }
 
@@ -87,6 +90,16 @@ func (s *URLService) saveRecord(shortID, originalURL string) {
 		log.Error().Err(err).Msg("Failed to write record")
 		return
 	}
+}
+
+func (s *URLService) BatchShortenURL(ctx context.Context, request dto.BatchRequestDTO) (string, error) {
+	shortID := s.ShortenURL(ctx, request.OriginalURL)
+	err := s.repoSQLite.SaveBatchURL(ctx, shortID, request.OriginalURL)
+	if err != nil {
+		return "", fmt.Errorf("failed to save URL %s: %w", request.OriginalURL, err)
+	}
+
+	return shortID, nil
 }
 
 func generateUniqueID(originalURL string) string {

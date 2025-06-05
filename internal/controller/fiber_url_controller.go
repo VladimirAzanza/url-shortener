@@ -150,8 +150,12 @@ func (c *FiberURLController) HandleAPIPostBatch(ctx *fiber.Ctx) error {
 
 	responses := make([]dto.BatchResponseDTO, 0, len(batchRequestDTO))
 	for _, req := range batchRequestDTO {
-		// add err to response to services
-		shortID := c.service.ShortenURL(ctx.UserContext(), req.OriginalURL)
+		shortID, err := c.service.BatchShortenURL(ctx.UserContext(), req)
+		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
 
 		responses = append(responses, dto.BatchResponseDTO{
 			CorrelationID: req.CorrelationID,
