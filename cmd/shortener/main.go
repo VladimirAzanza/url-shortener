@@ -6,6 +6,7 @@ import (
 	"github.com/VladimirAzanza/url-shortener/internal/controller"
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	filerepo "github.com/VladimirAzanza/url-shortener/internal/repo/file_repo"
+	"github.com/VladimirAzanza/url-shortener/internal/repo/memory"
 	"github.com/VladimirAzanza/url-shortener/internal/repo/sqlite"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
@@ -29,6 +30,7 @@ var Module = fx.Module(
 	fx.Supply(config.NewConfig()),
 	fx.Provide(
 		repo.NewDB,
+		memory.NewMemoryRepository,
 		sqlite.NewSQLiteRepository,
 		filerepo.NewFileRepository,
 		services.NewURLService,

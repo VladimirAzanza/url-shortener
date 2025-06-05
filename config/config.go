@@ -12,6 +12,7 @@ type Config struct {
 	FileStoragePath string `env:"FILE_STORAGE_PATH"`
 	DatabaseType    string `env:"DATABASE_TYPE"`
 	DatabaseDSN     string `env:"DATABASE_DSN"`
+	StorageType     string `env:"STORAGE_TYPE"`
 }
 
 func NewConfig() *Config {
@@ -40,6 +41,9 @@ func (c *Config) parseFlags() {
 	flag.StringVar(
 		&c.DatabaseDSN, "dsn", c.DatabaseDSN, "Database connection string (env: DATABASE_DSN)",
 	)
+	flag.StringVar(
+		&c.StorageType, "st", c.StorageType, "Storage type (memory|file|sqlite) (env: STORAGE_TYPE)",
+	)
 	if hasFlags() {
 		flag.Parse()
 	}
@@ -62,6 +66,9 @@ func hasFlags() bool {
 		if strings.HasPrefix(arg, "-dsn") {
 			return true
 		}
+		if strings.HasPrefix(arg, "-st") {
+			return true
+		}
 	}
 	return false
 }
@@ -81,6 +88,9 @@ func (c *Config) loadFromEnv() {
 	}
 	if dbDSN, exists := os.LookupEnv("DATABASE_DSN"); exists {
 		c.DatabaseDSN = dbDSN
+	}
+	if st, exists := os.LookupEnv("STORAGE_TYPE"); exists {
+		c.StorageType = st
 	}
 }
 
@@ -103,5 +113,8 @@ func (c *Config) setDefaults() {
 		} else {
 			c.DatabaseDSN = "host=localhost user=postgres password=postgres dbname=urlshortener port=5432 sslmode=disable"
 		}
+	}
+	if c.StorageType == "" {
+		c.StorageType = "sqlite"
 	}
 }

@@ -14,15 +14,15 @@ import (
 
 type URLService struct {
 	cfg           *config.Config
-	memoryStorage map[string]string
+	memoryStorage repo.IMemoryStorage
 	repoSQLite    repo.ISQLiteStorage
 	repoFile      repo.IFileStorage
 }
 
-func NewURLService(cfg *config.Config, repoSQLite repo.ISQLiteStorage, repoFile repo.IFileStorage) *URLService {
+func NewURLService(cfg *config.Config, memoryStorage repo.IMemoryStorage, repoSQLite repo.ISQLiteStorage, repoFile repo.IFileStorage) *URLService {
 	return &URLService{
 		cfg:           cfg,
-		memoryStorage: make(map[string]string, 0),
+		memoryStorage: memoryStorage,
 		repoSQLite:    repoSQLite,
 		repoFile:      repoFile,
 	}
@@ -30,8 +30,7 @@ func NewURLService(cfg *config.Config, repoSQLite repo.ISQLiteStorage, repoFile 
 
 func (s *URLService) ShortenURL(ctx context.Context, originalURL string) string {
 	shortID := generateUniqueID(originalURL)
-	s.memoryStorage[shortID] = originalURL
-
+	s.memoryStorage.SaveShortID(shortID, originalURL)
 	s.repoFile.SaveRecord(shortID, originalURL)
 	return shortID
 }
@@ -46,7 +45,7 @@ func (s *URLService) GetOriginalURL(ctx context.Context, shortID string) (string
 
 	select {
 	case <-timer.C:
-		originalURL, exists := s.memoryStorage[shortID]
+		originalURL, exists := s.memoryStorage.GetOriginalURL(shortID)
 		return originalURL, exists
 	case <-ctx.Done():
 		return "", false
