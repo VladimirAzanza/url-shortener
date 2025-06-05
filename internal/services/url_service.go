@@ -4,43 +4,35 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/VladimirAzanza/url-shortener/config"
 	"github.com/VladimirAzanza/url-shortener/internal/dto"
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
-	"github.com/google/uuid"
-	"github.com/rs/zerolog/log"
 )
 
-type URLRecord struct {
-	UUID        string `json:"uuid"`
-	ShortURL    string `json:"short_url"`
-	OriginalURL string `json:"original_url"`
-}
-
 type URLService struct {
-	cfg        *config.Config
-	storage    map[string]string
-	repoSQLite repo.ISQLiteStorage
+	cfg           *config.Config
+	memoryStorage map[string]string
+	repoSQLite    repo.ISQLiteStorage
+	repoFile      repo.IFileStorage
 }
 
-func NewURLService(cfg *config.Config, repoSQLite repo.ISQLiteStorage) *URLService {
+func NewURLService(cfg *config.Config, repoSQLite repo.ISQLiteStorage, repoFile repo.IFileStorage) *URLService {
 	return &URLService{
-		cfg:        cfg,
-		storage:    make(map[string]string, 0),
-		repoSQLite: repoSQLite,
+		cfg:           cfg,
+		memoryStorage: make(map[string]string, 0),
+		repoSQLite:    repoSQLite,
+		repoFile:      repoFile,
 	}
 }
 
 func (s *URLService) ShortenURL(ctx context.Context, originalURL string) string {
 	shortID := generateUniqueID(originalURL)
-	s.storage[shortID] = originalURL
+	s.memoryStorage[shortID] = originalURL
 
-	s.saveRecord(shortID, originalURL)
+	s.repoFile.SaveRecord(shortID, originalURL)
 	return shortID
 }
 
@@ -54,41 +46,10 @@ func (s *URLService) GetOriginalURL(ctx context.Context, shortID string) (string
 
 	select {
 	case <-timer.C:
-		originalURL, exists := s.storage[shortID]
+		originalURL, exists := s.memoryStorage[shortID]
 		return originalURL, exists
 	case <-ctx.Done():
 		return "", false
-	}
-}
-
-func (s *URLService) saveRecord(shortID, originalURL string) {
-	if s.cfg.FileStoragePath == "" {
-		log.Error().Msg("File storage path is empty")
-		return
-	}
-
-	urlRecord := URLRecord{
-		UUID:        uuid.New().String(),
-		ShortURL:    shortID,
-		OriginalURL: originalURL,
-	}
-
-	file, err := os.OpenFile(s.cfg.FileStoragePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to open storage file")
-		return
-	}
-	defer file.Close()
-
-	data, err := json.Marshal(urlRecord)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to Marshal url record")
-		return
-	}
-
-	if _, err := file.WriteString(string(data) + "\n"); err != nil {
-		log.Error().Err(err).Msg("Failed to write record")
-		return
 	}
 }
 

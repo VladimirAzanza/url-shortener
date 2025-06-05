@@ -5,6 +5,7 @@ import (
 	_ "github.com/VladimirAzanza/url-shortener/docs"
 	"github.com/VladimirAzanza/url-shortener/internal/controller"
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
+	filerepo "github.com/VladimirAzanza/url-shortener/internal/repo/file_repo"
 	"github.com/VladimirAzanza/url-shortener/internal/repo/sqlite"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
@@ -29,6 +30,7 @@ var Module = fx.Module(
 	fx.Provide(
 		repo.NewDB,
 		sqlite.NewSQLiteRepository,
+		filerepo.NewFileRepository,
 		services.NewURLService,
 		controller.NewFiberURLController,
 		server.NewFiberServer,
@@ -39,23 +41,5 @@ var Module = fx.Module(
 // Agregar mock uber y testear los controllers
 // Agregar el guardado de datos en la BD. Agregar un flag para que el usuario elija donde guardar los datos, bD o file.json
 // Agregar tests de benchmarking
-//  POST /api/shorten/batch -> request (agregar tx.begin, commit, rollback):
-// [
-//     {
-//         "correlation_id": "<строковый идентификатор>",
-//         "original_url": "<URL для сокращения>"
-//     },
-//     ...
-// ]
-
-// response:
-// 	[
-//     {
-//         "correlation_id": "<строковый идентификатор из объекта запроса>",
-//         "short_url": "<результирующий сокращённый URL>"
-//     },
-//     ...
-// ]
-
 // Intentar usar errors is errores as y join => revisar increment 13
 // investigar sobre sqlc
