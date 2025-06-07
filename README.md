@@ -160,3 +160,12 @@ CREATE TABLE short_urls (
 );
 ```
 
+## URL Shortener API Documentation (Swagger/OpenAPI)
+
+The URL Shortener service provides comprehensive API documentation through Swagger UI, which is automatically generated from the code annotations.
+
+Accessing Swagger UI
+After starting the service, you can access the interactive API documentation at:
+```
+http://localhost:8080/swagger/index.html
+```
