@@ -1,6 +1,6 @@
 # URL Shortener
 
-A high-performance URL shortening service built with Go and Fiber. This service allows users to convert long URLs into short, manageable links that redirect to the original destination.
+A high-performance URL shortening service built with Go and Fiber. This service allows users to convert long URLs into short IDs, manageable links that redirect to the original destination.
 
 ## Key Features
 
@@ -9,10 +9,10 @@ A high-performance URL shortening service built with Go and Fiber. This service 
 - Flexible configuration via:
     - Environment variables
     - Command-line flags (-a for SERVER_ADDRESS; -b for BASE_URL)
-    - Default values (SERVER_ADDRESS = :8080 ; BASE_URL = localhost)
+    - Default values (SERVER_ADDRESS = :8080 ; BASE_URL = localhost ; DATABASE_TYPE = sqlite ; DATABASE_DSN = file:urlshortener.db?cache=shared&mode=rwc)
 - High-performance Fiber web framework
 - Dependency injection with Uber FX
-- Comprehensive test coverage
+- Test Coverage up to 70%
 
 ---
 
@@ -58,6 +58,7 @@ SERVER_ADDRESS=:8082 BASE_URL=http://other-domain.com ./shortener
 - (-b) : host
 - (-f) : file storage path
 - (-dt): database type (sqlite|postgres)
+- (-st): storage type (files|memory|sqlite|postgres)
 
 ### 1. Shorten a URL
 
@@ -113,3 +114,58 @@ make cover
 - Go 1.24.0
 - Make (optional)
 - SQLite : https://www.sqlite.org/download.html
+- PostgreSQL
+
+## Create Database with PostgreSQL
+
+```bash
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres psql
+```
+
+Then set the password-> postgres=# \password postgres
+Quit -> \q
+
+```bash
+sudo -i -u postgres
+psql -U postgres
+```
+
+Then create database -> postgres=# create database urlshortener
+Check for existence of the database
+```bash
+sudo -u postgres psql -U postgres -c "\l"
+```
+
+Make migrations (PostgreSQL):
+```bash
+sudo -u postgres psql -d urlshortener
+
+CREATE TABLE short_urls (
+    uuid UUID PRIMARY KEY,
+    short_url VARCHAR(255) NOT NULL UNIQUE,
+    original_url TEXT NOT NULL UNIQUE
+);
+
+```
+
+Make migrations (SQLite):
+```bash
+sqlite3 urlshortener.db
+
+CREATE TABLE short_urls (
+    uuid UUID PRIMARY KEY,
+    short_url VARCHAR(255) NOT NULL UNIQUE,
+    original_url TEXT NOT NULL UNIQUE
+);
+```
+
+## URL Shortener API Documentation (Swagger/OpenAPI)
+
+The URL Shortener service provides comprehensive API documentation through Swagger UI, which is automatically generated from the code annotations.
+
+Accessing Swagger UI
+After starting the service, you can access the interactive API documentation at:
+```
+http://localhost:8080/swagger/index.html
+```

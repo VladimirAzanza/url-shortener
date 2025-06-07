@@ -1,5 +1,19 @@
 basePath: /
 definitions:
+  dto.BatchRequestDTO:
+    properties:
+      correlation_id:
+        type: string
+      original_url:
+        type: string
+    type: object
+  dto.BatchResponseDTO:
+    properties:
+      correlation_id:
+        type: string
+      short_url:
+        type: string
+    type: object
   dto.ShortenRequestDTO:
     properties:
       url:
@@ -26,23 +40,17 @@ paths:
       parameters:
       - description: Original URL to be shortened
         in: body
-        name: request
+        name: originalUrl
         required: true
         schema:
-          $ref: '#/definitions/dto.ShortenRequestDTO'
+          type: string
       produces:
       - text/plain
       responses:
         "201":
           description: Returns the shortened URL
           schema:
-            $ref: '#/definitions/dto.ShortenResponseDTO'
-        "500":
-          description: Failed to parse request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Shorten a URL
       tags:
       - URLs
@@ -71,6 +79,72 @@ paths:
       summary: Redirect to original URL
       tags:
       - URLs
+  /api/shorten:
+    post:
+      consumes:
+      - text/plain
+      description: Create a short URL from the original URL
+      parameters:
+      - description: Original URL to be shortened
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ShortenRequestDTO'
+      produces:
+      - text/plain
+      responses:
+        "201":
+          description: Returns the shortened URL
+          schema:
+            $ref: '#/definitions/dto.ShortenResponseDTO'
+        "500":
+          description: When internal server error occurs
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Shorten a URL
+      tags:
+      - API
+  /api/shorten/batch:
+    post:
+      consumes:
+      - application/json
+      description: Accepts a batch of URLs and returns their shortened versions
+      parameters:
+      - description: Array of URLs to shorten
+        in: body
+        name: request
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/dto.BatchRequestDTO'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Returns an array of shortened URLs
+          schema:
+            items:
+              $ref: '#/definitions/dto.BatchResponseDTO'
+            type: array
+        "400":
+          description: When request body is invalid or empty
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: When internal server error occurs
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Shorten multiple URLs in a single request
+      tags:
+      - API
   /ping:
     get:
       consumes:

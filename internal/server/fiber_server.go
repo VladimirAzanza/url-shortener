@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/VladimirAzanza/url-shortener/config"
@@ -40,19 +41,27 @@ func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	api := app.Group("/api")
 	{
 		api.Post("/shorten", urlController.HandleAPIPost)
+		api.Post("/shorten/batch", urlController.HandleAPIPostBatch)
 	}
 
 	return app
 }
 
-func StartFiberServer(lc fx.Lifecycle, app *fiber.App, cfg *config.Config) {
+func StartFiberServer(lc fx.Lifecycle, app *fiber.App, cfg *config.Config, db *sql.DB) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go app.Listen(cfg.ServerAddress)
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			return app.Shutdown()
+			if err := app.Shutdown(); err != nil {
+				return err
+			}
+			if db != nil {
+				return db.Close()
+			}
+
+			return nil
 		},
 	})
 }

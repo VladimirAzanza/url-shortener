@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -16,13 +15,11 @@ import (
 
 type FiberURLController struct {
 	service *services.URLService
-	db      *sql.DB
 }
 
-func NewFiberURLController(service *services.URLService, db *sql.DB) *FiberURLController {
+func NewFiberURLController(service *services.URLService) *FiberURLController {
 	return &FiberURLController{
 		service: service,
-		db:      db,
 	}
 }
 
@@ -38,7 +35,13 @@ func NewFiberURLController(service *services.URLService, db *sql.DB) *FiberURLCo
 func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 	baseURL := ctx.BaseURL()
 	originalURL := ctx.BodyRaw()
-	shortID := c.service.ShortenURL(ctx.UserContext(), string(originalURL))
+	shortID, err := c.service.ShortenURL(ctx.UserContext(), string(originalURL))
+	if err != nil {
+		log.Error().Err(err).Msg("Error at shorten api url")
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
 
 	return ctx.Status(fiber.StatusCreated).SendString(baseURL + "/" + shortID)
 }
@@ -55,27 +58,28 @@ func (c *FiberURLController) GetDBPing(ctx *fiber.Ctx) error {
 	pingCtx, cancel := context.WithTimeout(ctx.Context(), 5*time.Second)
 	defer cancel()
 
-	if err := c.db.PingContext(pingCtx); err != nil {
+	if err := c.service.PingDB(pingCtx); err != nil {
 		return ctx.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"message": "Can not connect to the Database",
 			"error":   err.Error(),
 		})
 	}
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "success",
+		"status":       "success",
+		"storage_type": c.service.GetStorageType(),
 	})
 }
 
 // HandleAPIPost Post a URL to shorten
 // @Summary Shorten a URL
 // @Description Create a short URL from the original URL
-// @Tags URLs
+// @Tags API
 // @Accept plain
 // @Produce plain
 // @Param request body dto.ShortenRequestDTO true "Original URL to be shortened"
 // @Success 201 {object} dto.ShortenResponseDTO "Returns the shortened URL"
-// @Failure 500 {object} map[string]string "Failed to parse request"
-// @Router / [post]
+// @Failure 500 {object} map[string]string "When internal server error occurs"
+// @Router /api/shorten [post]
 func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 	var shortenRequestDTO dto.ShortenRequestDTO
 	if err := ctx.BodyParser(&shortenRequestDTO); err != nil {
@@ -85,7 +89,13 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 		})
 	}
 
-	shortID := c.service.ShortenAPIURL(ctx.UserContext(), &shortenRequestDTO)
+	shortID, err := c.service.ShortenAPIURL(ctx.UserContext(), &shortenRequestDTO)
+	if err != nil {
+		log.Error().Err(err).Msg("Error at shorten api url")
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
 
 	fullURL := fmt.Sprintf("%s/%s", ctx.BaseURL(), shortID)
 	response := dto.ShortenResponseDTO{
@@ -131,4 +141,48 @@ func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
 
 	log.Info().Str("shortID", shortID).Str("originalURL", originalURL).Msg("Redirect to original URL")
 	return ctx.Redirect(originalURL, fiber.StatusTemporaryRedirect)
+}
+
+// HandleAPIPostBatch Shorten multiple URLs in batch
+// @Summary Shorten multiple URLs in a single request
+// @Description Accepts a batch of URLs and returns their shortened versions
+// @Tags API
+// @Accept json
+// @Produce json
+// @Param request body []dto.BatchRequestDTO true "Array of URLs to shorten"
+// @Success 201 {array} dto.BatchResponseDTO "Returns an array of shortened URLs"
+// @Failure 400 {object} map[string]string "When request body is invalid or empty"
+// @Failure 500 {object} map[string]string "When internal server error occurs"
+// @Router /api/shorten/batch [post]
+func (c *FiberURLController) HandleAPIPostBatch(ctx *fiber.Ctx) error {
+	var batchRequestDTO []dto.BatchRequestDTO
+	if err := ctx.BodyParser(&batchRequestDTO); err != nil {
+		log.Err(err).Msg(constants.MsgFailedToParseBody)
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": constants.MsgFailedToParseBody,
+		})
+	}
+
+	if len(batchRequestDTO) == 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "empty batch",
+		})
+	}
+
+	responses := make([]dto.BatchResponseDTO, 0, len(batchRequestDTO))
+	for _, req := range batchRequestDTO {
+		shortID, err := c.service.BatchShortenURL(ctx.UserContext(), req)
+		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		responses = append(responses, dto.BatchResponseDTO{
+			CorrelationID: req.CorrelationID,
+			ShortURL:      fmt.Sprintf("%s/%s", ctx.BaseURL(), shortID),
+		})
+	}
+	return ctx.Status(fiber.StatusCreated).JSON(responses)
+
 }

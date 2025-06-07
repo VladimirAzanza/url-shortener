@@ -3,45 +3,49 @@ package services
 import (
 	"context"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/hex"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/VladimirAzanza/url-shortener/config"
 	"github.com/VladimirAzanza/url-shortener/internal/dto"
-	"github.com/google/uuid"
+	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	"github.com/rs/zerolog/log"
 )
 
-type URLRecord struct {
-	UUID        string `json:"uuid"`
-	ShortURL    string `json:"short_url"`
-	OriginalURL string `json:"original_url"`
-}
-
 type URLService struct {
-	cfg     *config.Config
-	storage map[string]string
+	cfg  *config.Config
+	repo repo.IURLRepository
 }
 
-func NewURLService(cfg *config.Config) *URLService {
+func NewURLService(cfg *config.Config, repo repo.IURLRepository) *URLService {
 	return &URLService{
-		cfg:     cfg,
-		storage: make(map[string]string, 0),
+		cfg:  cfg,
+		repo: repo,
 	}
 }
 
-func (s *URLService) ShortenURL(ctx context.Context, originalURL string) string {
-	shortID := generateUniqueID(originalURL)
-	s.storage[shortID] = originalURL
+func (s *URLService) ShortenURL(ctx context.Context, originalURL string) (string, error) {
+	existingShortID, err := s.repo.GetShortIDByOriginalURL(ctx, originalURL)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return "", fmt.Errorf("error checking existing URL: %w", err)
+	}
 
-	s.saveRecord(shortID, originalURL)
-	return shortID
+	if existingShortID != "" {
+		return existingShortID, nil
+	}
+
+	shortID := generateUniqueID(originalURL)
+	if err := s.repo.SaveShortID(ctx, shortID, originalURL); err != nil {
+		fmt.Printf("Error saving URL: %v\n", err)
+		return "", err
+	}
+	return shortID, nil
 }
 
-func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.ShortenRequestDTO) string {
+func (s *URLService) ShortenAPIURL(ctx context.Context, shortenRequest *dto.ShortenRequestDTO) (string, error) {
 	return s.ShortenURL(ctx, shortenRequest.URL)
 }
 
@@ -51,42 +55,45 @@ func (s *URLService) GetOriginalURL(ctx context.Context, shortID string) (string
 
 	select {
 	case <-timer.C:
-		originalURL, exists := s.storage[shortID]
+		originalURL, exists, err := s.repo.GetOriginalURL(ctx, shortID)
+		if err != nil {
+			log.Error().Err(err).Msg("Error getting original URL")
+			return "", false
+		}
 		return originalURL, exists
 	case <-ctx.Done():
 		return "", false
 	}
 }
 
-func (s *URLService) saveRecord(shortID, originalURL string) {
-	if s.cfg.FileStoragePath == "" {
-		log.Error().Msg("File storage path is empty")
-		return
+func (s *URLService) BatchShortenURL(ctx context.Context, request dto.BatchRequestDTO) (string, error) {
+	existingShortID, err := s.repo.GetShortIDByOriginalURL(ctx, request.OriginalURL)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return "", fmt.Errorf("error checking existing URL: %w", err)
 	}
 
-	urlRecord := URLRecord{
-		UUID:        uuid.New().String(),
-		ShortURL:    shortID,
-		OriginalURL: originalURL,
+	if existingShortID != "" {
+		return existingShortID, nil
 	}
 
-	file, err := os.OpenFile(s.cfg.FileStoragePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	shortID := generateUniqueID(request.OriginalURL)
+	err = s.repo.SaveBatchURL(ctx, shortID, request.OriginalURL)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to open storage file")
-		return
-	}
-	defer file.Close()
-
-	data, err := json.Marshal(urlRecord)
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to Marshal url record")
-		return
+		return "", fmt.Errorf("failed to save URL %s: %w", request.OriginalURL, err)
 	}
 
-	if _, err := file.WriteString(string(data) + "\n"); err != nil {
-		log.Error().Err(err).Msg("Failed to write record")
-		return
+	return shortID, nil
+}
+
+func (s *URLService) PingDB(ctx context.Context) error {
+	if s.repo == nil {
+		return fmt.Errorf("no storage repository configured")
 	}
+	return s.repo.Ping(ctx)
+}
+
+func (s *URLService) GetStorageType() string {
+	return s.cfg.StorageType
 }
 
 func generateUniqueID(originalURL string) string {

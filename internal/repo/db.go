@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/VladimirAzanza/url-shortener/config"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog/log"
 )
@@ -15,13 +16,13 @@ func NewDB(cfg *config.Config) (*sql.DB, error) {
 		err error
 	)
 
-	switch cfg.DatabaseType {
+	switch cfg.StorageType {
 	case "sqlite":
 		db, err = sql.Open("sqlite3", cfg.DatabaseDSN)
 	case "postgres":
 		db, err = sql.Open("postgres", cfg.DatabaseDSN)
 	default:
-		return nil, fmt.Errorf("unsupported database type: %s", cfg.DatabaseType)
+		return nil, nil
 	}
 
 	if err != nil {
