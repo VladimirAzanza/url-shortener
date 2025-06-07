@@ -42,6 +42,20 @@ func (r *SQLiteRepository) SaveBatchURL(ctx context.Context, shortID, originalUR
 	return tx.Commit()
 }
 
+func (r *SQLiteRepository) GetShortIDByOriginalURL(ctx context.Context, originalURL string) (string, error) {
+	var shortID string
+	err := r.db.QueryRowContext(ctx,
+		"SELECT short_url FROM short_urls WHERE original_url = ?", originalURL).Scan(&shortID)
+
+	if err == sql.ErrNoRows {
+		return "", nil
+	}
+	if err != nil {
+		return "", err
+	}
+	return shortID, nil
+}
+
 func (r *SQLiteRepository) GetOriginalURL(ctx context.Context, shortID string) (string, bool, error) {
 	var originalURL string
 	err := r.db.QueryRowContext(ctx,

@@ -71,3 +71,12 @@ func (r *FileRepository) Ping(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (r *FileRepository) GetShortIDByOriginalURL(ctx context.Context, originalURL string) (string, error) {
+	for shortID, url := range r.storage {
+		if url == originalURL {
+			return shortID, nil
+		}
+	}
+	return "", nil
+}

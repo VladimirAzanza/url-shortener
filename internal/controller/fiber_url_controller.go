@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -16,13 +15,11 @@ import (
 
 type FiberURLController struct {
 	service *services.URLService
-	db      *sql.DB
 }
 
-func NewFiberURLController(service *services.URLService, db *sql.DB) *FiberURLController {
+func NewFiberURLController(service *services.URLService) *FiberURLController {
 	return &FiberURLController{
 		service: service,
-		db:      db,
 	}
 }
 
@@ -38,7 +35,13 @@ func NewFiberURLController(service *services.URLService, db *sql.DB) *FiberURLCo
 func (c *FiberURLController) HandlePost(ctx *fiber.Ctx) error {
 	baseURL := ctx.BaseURL()
 	originalURL := ctx.BodyRaw()
-	shortID := c.service.ShortenURL(ctx.UserContext(), string(originalURL))
+	shortID, err := c.service.ShortenURL(ctx.UserContext(), string(originalURL))
+	if err != nil {
+		log.Error().Err(err).Msg("Error at shorten api url")
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
 
 	return ctx.Status(fiber.StatusCreated).SendString(baseURL + "/" + shortID)
 }
@@ -55,14 +58,15 @@ func (c *FiberURLController) GetDBPing(ctx *fiber.Ctx) error {
 	pingCtx, cancel := context.WithTimeout(ctx.Context(), 5*time.Second)
 	defer cancel()
 
-	if err := c.db.PingContext(pingCtx); err != nil {
+	if err := c.service.PingDB(pingCtx); err != nil {
 		return ctx.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"message": "Can not connect to the Database",
 			"error":   err.Error(),
 		})
 	}
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "success",
+		"status":       "success",
+		"storage_type": c.service.GetStorageType(),
 	})
 }
 
@@ -85,7 +89,13 @@ func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 		})
 	}
 
-	shortID := c.service.ShortenAPIURL(ctx.UserContext(), &shortenRequestDTO)
+	shortID, err := c.service.ShortenAPIURL(ctx.UserContext(), &shortenRequestDTO)
+	if err != nil {
+		log.Error().Err(err).Msg("Error at shorten api url")
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
 
 	fullURL := fmt.Sprintf("%s/%s", ctx.BaseURL(), shortID)
 	response := dto.ShortenResponseDTO{

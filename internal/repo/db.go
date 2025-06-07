@@ -22,7 +22,7 @@ func NewDB(cfg *config.Config) (*sql.DB, error) {
 	case "postgres":
 		db, err = sql.Open("postgres", cfg.DatabaseDSN)
 	default:
-		return nil, fmt.Errorf("unsupported database type: %s", cfg.StorageType)
+		return nil, nil
 	}
 
 	if err != nil {

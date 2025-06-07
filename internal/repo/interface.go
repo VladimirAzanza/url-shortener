@@ -19,6 +19,7 @@ type IURLRepository interface {
 	SaveShortID(ctx context.Context, shortID, originalURL string) error
 	SaveBatchURL(ctx context.Context, shortID, originalURL string) error
 	GetOriginalURL(ctx context.Context, shortID string) (string, bool, error)
+	GetShortIDByOriginalURL(ctx context.Context, originalURL string) (string, error)
 	Ping(ctx context.Context) error
 }
 

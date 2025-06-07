@@ -30,9 +30,6 @@ var Module = fx.Module(
 	fx.Supply(config.NewConfig()),
 	fx.Provide(
 		repo.NewDB,
-		memory.NewMemoryRepository,
-		sqlite.NewSQLiteRepository,
-		filerepo.NewFileRepository,
 		provideRepository,
 		services.NewURLService,
 		controller.NewFiberURLController,
@@ -41,20 +38,15 @@ var Module = fx.Module(
 	fx.Invoke(server.StartFiberServer),
 )
 
-func provideRepository(
-	cfg *config.Config,
-	memoryRepo *memory.MemoryRepository,
-	fileRepo *filerepo.FileRepository,
-	sqliteRepo *sqlite.SQLiteRepository,
-	// postgresRepo,
-) repo.IURLRepository {
+func provideRepository(cfg *config.Config) repo.IURLRepository {
 	switch cfg.StorageType {
 	case "memory":
-		return memoryRepo
+		return memory.NewMemoryRepository()
 	case "file":
-		return fileRepo
+		return filerepo.NewFileRepository(cfg)
 	case "sqlite":
-		return sqliteRepo
+		db, _ := repo.NewDB(cfg)
+		return sqlite.NewSQLiteRepository(db)
 	// case "postgres":
 	// 	return postgresRepo
 	default:

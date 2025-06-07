@@ -35,3 +35,12 @@ func (r *MemoryRepository) Ping(ctx context.Context) error {
 	log.Info().Msg("Memory Storage always available")
 	return nil
 }
+
+func (r *MemoryRepository) GetShortIDByOriginalURL(ctx context.Context, originalURL string) (string, error) {
+	for shortID, url := range r.storage {
+		if url == originalURL {
+			return shortID, nil
+		}
+	}
+	return "", nil
+}
