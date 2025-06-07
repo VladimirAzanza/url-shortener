@@ -13,10 +13,14 @@ type SQLiteRepository struct {
 	db *sql.DB
 }
 
-func NewSQLiteRepository(db *sql.DB) repo.URLRepository {
+func NewSQLiteRepository(db *sql.DB) repo.IURLRepository {
 	return &SQLiteRepository{
 		db: db,
 	}
+}
+
+func (r *SQLiteRepository) SaveShortID(ctx context.Context, shortID, originalURL string) error {
+	return r.SaveBatchURL(ctx, shortID, originalURL)
 }
 
 func (r *SQLiteRepository) SaveBatchURL(ctx context.Context, shortID, originalURL string) error {
@@ -36,4 +40,24 @@ func (r *SQLiteRepository) SaveBatchURL(ctx context.Context, shortID, originalUR
 	}
 
 	return tx.Commit()
+}
+
+func (r *SQLiteRepository) GetOriginalURL(ctx context.Context, shortID string) (string, bool, error) {
+	var originalURL string
+	err := r.db.QueryRowContext(ctx,
+		"SELECT original_url FROM short_urls WHERE short_url = ?",
+		shortID).Scan(&originalURL)
+
+	if err == sql.ErrNoRows {
+		return "", false, nil
+	}
+	if err != nil {
+		return "", false, err
+	}
+
+	return originalURL, true, nil
+}
+
+func (r *SQLiteRepository) Ping(ctx context.Context) error {
+	return r.db.PingContext(ctx)
 }
