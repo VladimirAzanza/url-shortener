@@ -8,7 +8,7 @@ type MemoryRepository struct {
 	storage map[string]string
 }
 
-func NewMemoryRepository() repo.IMemoryStorage {
+func NewMemoryRepository() repo.URLRepository {
 	return &MemoryRepository{
 		storage: make(map[string]string, 0),
 	}

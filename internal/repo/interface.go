@@ -2,23 +2,31 @@ package repo
 
 import "context"
 
-type ISQLiteStorage interface {
+// type ISQLiteStorage interface {
+// 	SaveBatchURL(ctx context.Context, shortID, originalURL string) error
+// }
+
+// type IFileStorage interface {
+// 	SaveRecord(shortID, originalURL string) error
+// }
+
+// type IMemoryStorage interface {
+// 	SaveShortID(shortID, originalURL string)
+// 	GetOriginalURL(shortID string) (string, bool)
+// }
+
+type URLRepository interface {
+	SaveShortID(ctx context.Context, shortID, originalURL string) error
 	SaveBatchURL(ctx context.Context, shortID, originalURL string) error
-}
-
-type IFileStorage interface {
-	SaveRecord(shortID, originalURL string) error
-}
-
-type IMemoryStorage interface {
-	SaveShortID(shortID, originalURL string)
-	GetOriginalURL(shortID string) (string, bool)
+	GetOriginalURL(ctx context.Context, shortCode string) (string, bool, error)
+	Ping(ctx context.Context) error
 }
 
 type StorageType string
 
 const (
-	MemoryStorage StorageType = "memory"
-	FileStorage   StorageType = "file"
-	SQLiteStorage StorageType = "sqlite"
+	MemoryStorage  StorageType = "memory"
+	FileStorage    StorageType = "file"
+	SQLiteStorage  StorageType = "sqlite"
+	PostgreStorage StorageType = "postgres"
 )

@@ -2,6 +2,7 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -21,6 +22,8 @@ func NewConfig() *Config {
 	cfg.loadFromEnv()
 	cfg.parseFlags()
 	cfg.setDefaults()
+
+	cfg.validate()
 
 	return cfg
 }
@@ -116,5 +119,18 @@ func (c *Config) setDefaults() {
 	}
 	if c.StorageType == "" {
 		c.StorageType = "sqlite"
+	}
+}
+
+func (c *Config) validate() {
+	validStorageTypes := map[string]bool{
+		"memory":   true,
+		"file":     true,
+		"sqlite":   true,
+		"postgres": true,
+	}
+
+	if !validStorageTypes[c.StorageType] {
+		panic(fmt.Sprintf("invalid storage type: %s. Valid options are: memory, file, sqlite, postgres", c.StorageType))
 	}
 }

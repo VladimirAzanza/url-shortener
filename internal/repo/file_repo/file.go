@@ -16,7 +16,7 @@ type FileRepository struct {
 	cfg *config.Config
 }
 
-func NewFileRepository(cfg *config.Config) repo.IFileStorage {
+func NewFileRepository(cfg *config.Config) repo.URLRepository {
 	return &FileRepository{
 		cfg: cfg,
 	}

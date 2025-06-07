@@ -33,12 +33,34 @@ var Module = fx.Module(
 		memory.NewMemoryRepository,
 		sqlite.NewSQLiteRepository,
 		filerepo.NewFileRepository,
+		provideRepository,
 		services.NewURLService,
 		controller.NewFiberURLController,
 		server.NewFiberServer,
 	),
 	fx.Invoke(server.StartFiberServer),
 )
+
+func provideRepository(
+	cfg *config.Config,
+	memoryRepo *memory.MemoryRepository,
+	fileRepo *filerepo.FileRepository,
+	sqliteRepo *sqlite.SQLiteRepository,
+	// postgresRepo,
+) repo.URLRepository {
+	switch cfg.StorageType {
+	case "memory":
+		return memoryRepo
+	case "file":
+		return fileRepo
+	case "sqlite":
+		return sqliteRepo
+	// case "postgres":
+	// 	return postgresRepo
+	default:
+		panic("unsupported storage type")
+	}
+}
 
 // Agregar mock uber y testear los controllers
 // Agregar el guardado de datos en la BD. Agregar un flag para que el usuario elija donde guardar los datos, bD o file.json

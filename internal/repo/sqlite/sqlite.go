@@ -13,7 +13,7 @@ type SQLiteRepository struct {
 	db *sql.DB
 }
 
-func NewSQLiteRepository(db *sql.DB) repo.ISQLiteStorage {
+func NewSQLiteRepository(db *sql.DB) repo.URLRepository {
 	return &SQLiteRepository{
 		db: db,
 	}

@@ -16,13 +16,13 @@ func NewDB(cfg *config.Config) (*sql.DB, error) {
 		err error
 	)
 
-	switch cfg.DatabaseType {
+	switch cfg.StorageType {
 	case "sqlite":
 		db, err = sql.Open("sqlite3", cfg.DatabaseDSN)
 	case "postgres":
 		db, err = sql.Open("postgres", cfg.DatabaseDSN)
 	default:
-		return nil, fmt.Errorf("unsupported database type: %s", cfg.DatabaseType)
+		return nil, fmt.Errorf("unsupported database type: %s", cfg.StorageType)
 	}
 
 	if err != nil {
