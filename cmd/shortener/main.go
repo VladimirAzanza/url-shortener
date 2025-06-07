@@ -47,7 +47,7 @@ func provideRepository(
 	fileRepo *filerepo.FileRepository,
 	sqliteRepo *sqlite.SQLiteRepository,
 	// postgresRepo,
-) repo.URLRepository {
+) repo.IURLRepository {
 	switch cfg.StorageType {
 	case "memory":
 		return memoryRepo

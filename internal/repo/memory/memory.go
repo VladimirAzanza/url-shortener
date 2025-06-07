@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
-	"github.com/gofiber/fiber/v2/log"
+	"github.com/rs/zerolog/log"
 )
 
 type MemoryRepository struct {
@@ -32,6 +32,6 @@ func (r *MemoryRepository) GetOriginalURL(ctx context.Context, shortID string) (
 }
 
 func (r *MemoryRepository) Ping(ctx context.Context) error {
-	log.Info("Memory Storage always available")
+	log.Info().Msg("Memory Storage always available")
 	return nil
 }

@@ -61,6 +61,7 @@ func (r *FileRepository) SaveBatchURL(ctx context.Context, shortID, originalURL 
 // In a real implementation, consider using a database or an index.
 func (r *FileRepository) GetOriginalURL(ctx context.Context, shortID string) (string, bool, error) {
 	originalURL, ok := r.storage[shortID]
+	log.Info().Msg("In a real implementation, consider using a database or an index.")
 	return originalURL, ok, nil
 }
 
