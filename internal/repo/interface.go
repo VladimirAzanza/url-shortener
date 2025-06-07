@@ -15,10 +15,10 @@ import "context"
 // 	GetOriginalURL(shortID string) (string, bool)
 // }
 
-type URLRepository interface {
+type IURLRepository interface {
 	SaveShortID(ctx context.Context, shortID, originalURL string) error
 	SaveBatchURL(ctx context.Context, shortID, originalURL string) error
-	GetOriginalURL(ctx context.Context, shortCode string) (string, bool, error)
+	GetOriginalURL(ctx context.Context, shortID string) (string, bool, error)
 	Ping(ctx context.Context) error
 }
 
