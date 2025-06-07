@@ -73,13 +73,13 @@ func (c *FiberURLController) GetDBPing(ctx *fiber.Ctx) error {
 // HandleAPIPost Post a URL to shorten
 // @Summary Shorten a URL
 // @Description Create a short URL from the original URL
-// @Tags URLs
+// @Tags API
 // @Accept plain
 // @Produce plain
 // @Param request body dto.ShortenRequestDTO true "Original URL to be shortened"
 // @Success 201 {object} dto.ShortenResponseDTO "Returns the shortened URL"
-// @Failure 500 {object} map[string]string "Failed to parse request"
-// @Router / [post]
+// @Failure 500 {object} map[string]string "When internal server error occurs"
+// @Router /api/shorten [post]
 func (c *FiberURLController) HandleAPIPost(ctx *fiber.Ctx) error {
 	var shortenRequestDTO dto.ShortenRequestDTO
 	if err := ctx.BodyParser(&shortenRequestDTO); err != nil {
@@ -143,6 +143,17 @@ func (c *FiberURLController) HandleGet(ctx *fiber.Ctx) error {
 	return ctx.Redirect(originalURL, fiber.StatusTemporaryRedirect)
 }
 
+// HandleAPIPostBatch Shorten multiple URLs in batch
+// @Summary Shorten multiple URLs in a single request
+// @Description Accepts a batch of URLs and returns their shortened versions
+// @Tags API
+// @Accept json
+// @Produce json
+// @Param request body []dto.BatchRequestDTO true "Array of URLs to shorten"
+// @Success 201 {array} dto.BatchResponseDTO "Returns an array of shortened URLs"
+// @Failure 400 {object} map[string]string "When request body is invalid or empty"
+// @Failure 500 {object} map[string]string "When internal server error occurs"
+// @Router /api/shorten/batch [post]
 func (c *FiberURLController) HandleAPIPostBatch(ctx *fiber.Ctx) error {
 	var batchRequestDTO []dto.BatchRequestDTO
 	if err := ctx.BodyParser(&batchRequestDTO); err != nil {

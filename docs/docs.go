@@ -33,6 +33,40 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Original URL to be shortened",
+                        "name": "originalUrl",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns the shortened URL",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/shorten": {
+            "post": {
+                "description": "Create a short URL from the original URL",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "Shorten a URL",
+                "parameters": [
+                    {
+                        "description": "Original URL to be shortened",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -49,7 +83,65 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Failed to parse request",
+                        "description": "When internal server error occurs",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/shorten/batch": {
+            "post": {
+                "description": "Accepts a batch of URLs and returns their shortened versions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API"
+                ],
+                "summary": "Shorten multiple URLs in a single request",
+                "parameters": [
+                    {
+                        "description": "Array of URLs to shorten",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.BatchRequestDTO"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Returns an array of shortened URLs",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.BatchResponseDTO"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "When request body is invalid or empty",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "When internal server error occurs",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -135,6 +227,28 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.BatchRequestDTO": {
+            "type": "object",
+            "properties": {
+                "correlation_id": {
+                    "type": "string"
+                },
+                "original_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.BatchResponseDTO": {
+            "type": "object",
+            "properties": {
+                "correlation_id": {
+                    "type": "string"
+                },
+                "short_url": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ShortenRequestDTO": {
             "type": "object",
             "properties": {

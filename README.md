@@ -1,6 +1,6 @@
 # URL Shortener
 
-A high-performance URL shortening service built with Go and Fiber. This service allows users to convert long URLs into short, manageable links that redirect to the original destination.
+A high-performance URL shortening service built with Go and Fiber. This service allows users to convert long URLs into short IDs, manageable links that redirect to the original destination.
 
 ## Key Features
 
@@ -9,10 +9,10 @@ A high-performance URL shortening service built with Go and Fiber. This service 
 - Flexible configuration via:
     - Environment variables
     - Command-line flags (-a for SERVER_ADDRESS; -b for BASE_URL)
-    - Default values (SERVER_ADDRESS = :8080 ; BASE_URL = localhost)
+    - Default values (SERVER_ADDRESS = :8080 ; BASE_URL = localhost ; DATABASE_TYPE = sqlite ; DATABASE_DSN = file:urlshortener.db?cache=shared&mode=rwc)
 - High-performance Fiber web framework
 - Dependency injection with Uber FX
-- Comprehensive test coverage
+- Test Coverage up to 70%
 
 ---
 
@@ -58,6 +58,7 @@ SERVER_ADDRESS=:8082 BASE_URL=http://other-domain.com ./shortener
 - (-b) : host
 - (-f) : file storage path
 - (-dt): database type (sqlite|postgres)
+- (-st): storage type (files|memory|sqlite|postgres)
 
 ### 1. Shorten a URL
 

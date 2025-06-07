@@ -59,3 +59,5 @@ func provideRepository(cfg *config.Config) repo.IURLRepository {
 // Agregar tests de benchmarking
 // Intentar usar errors is errores as y join => revisar increment 13
 // investigar sobre sqlc
+// agregar autentificacion
+// agregar postgres
