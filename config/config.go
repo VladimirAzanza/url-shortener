@@ -45,7 +45,7 @@ func (c *Config) parseFlags() {
 		&c.DatabaseDSN, "dsn", c.DatabaseDSN, "Database connection string (env: DATABASE_DSN)",
 	)
 	flag.StringVar(
-		&c.StorageType, "st", c.StorageType, "Storage type (memory|file|sqlite) (env: STORAGE_TYPE)",
+		&c.StorageType, "st", c.StorageType, "Storage type (memory|file|sqlite|postgres) (env: STORAGE_TYPE)",
 	)
 	if hasFlags() {
 		flag.Parse()
