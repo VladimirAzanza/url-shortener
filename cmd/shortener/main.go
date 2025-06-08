@@ -7,6 +7,7 @@ import (
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	filerepo "github.com/VladimirAzanza/url-shortener/internal/repo/file_repo"
 	"github.com/VladimirAzanza/url-shortener/internal/repo/memory"
+	"github.com/VladimirAzanza/url-shortener/internal/repo/postgres"
 	"github.com/VladimirAzanza/url-shortener/internal/repo/sqlite"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
@@ -47,8 +48,9 @@ func provideRepository(cfg *config.Config) repo.IURLRepository {
 	case "sqlite":
 		db, _ := repo.NewDB(cfg)
 		return sqlite.NewSQLiteRepository(db)
-	// case "postgres":
-	// 	return postgresRepo
+	case "postgres":
+		db, _ := repo.NewDB(cfg)
+		return postgres.NewPostgreSQLRepository(db)
 	default:
 		panic("unsupported storage type")
 	}
