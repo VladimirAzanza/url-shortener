@@ -6,6 +6,11 @@ A high-performance URL shortening service built with Go and Fiber. This service 
 
 - URL shortening using SHA256 hashing + timestamp
 - Automatic redirection to original URLs
+- **Flexible storage options** (selectable via `-st` flag or `STORAGE_TYPE` env var):
+  - **Memory**: Fast in-memory storage (volatile)
+  - **File**: Persistent JSON file storage
+  - **SQLite**: Embedded database (default)
+  - **PostgreSQL**: Production-grade relational database
 - Flexible configuration via:
     - Environment variables
     - Command-line flags (-a for SERVER_ADDRESS; -b for BASE_URL)

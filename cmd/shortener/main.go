@@ -7,6 +7,7 @@ import (
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	filerepo "github.com/VladimirAzanza/url-shortener/internal/repo/file_repo"
 	"github.com/VladimirAzanza/url-shortener/internal/repo/memory"
+	"github.com/VladimirAzanza/url-shortener/internal/repo/postgres"
 	"github.com/VladimirAzanza/url-shortener/internal/repo/sqlite"
 	"github.com/VladimirAzanza/url-shortener/internal/server"
 	"github.com/VladimirAzanza/url-shortener/internal/services"
@@ -47,17 +48,16 @@ func provideRepository(cfg *config.Config) repo.IURLRepository {
 	case "sqlite":
 		db, _ := repo.NewDB(cfg)
 		return sqlite.NewSQLiteRepository(db)
-	// case "postgres":
-	// 	return postgresRepo
+	case "postgres":
+		db, _ := repo.NewDB(cfg)
+		return postgres.NewPostgreSQLRepository(db)
 	default:
 		panic("unsupported storage type")
 	}
 }
 
 // Agregar mock uber y testear los controllers
-// Agregar el guardado de datos en la BD. Agregar un flag para que el usuario elija donde guardar los datos, bD o file.json
 // Agregar tests de benchmarking
 // Intentar usar errors is errores as y join => revisar increment 13
 // investigar sobre sqlc
 // agregar autentificacion
-// agregar postgres
