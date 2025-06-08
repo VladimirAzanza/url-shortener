@@ -57,9 +57,7 @@ func provideRepository(cfg *config.Config) repo.IURLRepository {
 }
 
 // Agregar mock uber y testear los controllers
-// Agregar el guardado de datos en la BD. Agregar un flag para que el usuario elija donde guardar los datos, bD o file.json
 // Agregar tests de benchmarking
 // Intentar usar errors is errores as y join => revisar increment 13
 // investigar sobre sqlc
 // agregar autentificacion
-// agregar postgres
