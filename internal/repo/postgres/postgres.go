@@ -7,6 +7,7 @@ import (
 
 	"github.com/VladimirAzanza/url-shortener/internal/repo"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type PostgreSQLRepository struct {
@@ -75,4 +76,14 @@ func (r *PostgreSQLRepository) GetOriginalURL(ctx context.Context, shortID strin
 
 func (r *PostgreSQLRepository) Ping(ctx context.Context) error {
 	return r.db.PingContext(ctx)
+}
+
+func (r *PostgreSQLRepository) BatchDeleteURLs(ctx context.Context, shortURLs []string) error {
+	query := `
+        UPDATE short_urls 
+        SET is_deleted = true 
+        WHERE short_url = ANY($1) AND is_deleted = false`
+
+	_, err := r.db.ExecContext(ctx, query, pq.Array(shortURLs))
+	return err
 }

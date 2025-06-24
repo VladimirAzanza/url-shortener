@@ -44,3 +44,7 @@ func (r *MemoryRepository) GetShortIDByOriginalURL(ctx context.Context, original
 	}
 	return "", nil
 }
+
+func (r *MemoryRepository) BatchDeleteURLs(ctx context.Context, shortURLs []string) error {
+	return nil
+}

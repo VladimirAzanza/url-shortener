@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/VladimirAzanza/url-shortener/config"
@@ -25,6 +26,47 @@ func NewURLService(cfg *config.Config, repo repo.IURLRepository) *URLService {
 		cfg:  cfg,
 		repo: repo,
 	}
+}
+
+func (s *URLService) ConcurrentBatchDelete(ctx context.Context, shortURLs []string) error {
+	const batchSize = 2
+	var wg sync.WaitGroup
+	errChan := make(chan error, len(shortURLs)/batchSize+1)
+
+	for i := 0; i < len(shortURLs); i += batchSize {
+		wg.Add(1)
+		go func(start int) {
+			defer wg.Done()
+			end := start + batchSize
+			if end > len(shortURLs) {
+				end = len(shortURLs)
+			}
+			batch := shortURLs[start:end]
+			if err := s.repo.BatchDeleteURLs(ctx, batch); err != nil {
+				errChan <- err
+			}
+		}(i)
+	}
+
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *URLService) BatchDeleteURLs(ctx context.Context, shortURLs []string) error {
+	if err := s.repo.BatchDeleteURLs(ctx, shortURLs); err != nil {
+		return fmt.Errorf("error at deleting urls: %w", err)
+	}
+	return nil
 }
 
 func (s *URLService) ShortenURL(ctx context.Context, originalURL string) (string, error) {

@@ -20,6 +20,7 @@ type IURLRepository interface {
 	SaveBatchURL(ctx context.Context, shortID, originalURL string) error
 	GetOriginalURL(ctx context.Context, shortID string) (string, bool, error)
 	GetShortIDByOriginalURL(ctx context.Context, originalURL string) (string, error)
+	BatchDeleteURLs(ctx context.Context, shortURLs []string) error
 	Ping(ctx context.Context) error
 }
 

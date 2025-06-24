@@ -75,3 +75,7 @@ func (r *SQLiteRepository) GetOriginalURL(ctx context.Context, shortID string) (
 func (r *SQLiteRepository) Ping(ctx context.Context) error {
 	return r.db.PingContext(ctx)
 }
+
+func (r *SQLiteRepository) BatchDeleteURLs(ctx context.Context, shortURLs []string) error {
+	return nil
+}

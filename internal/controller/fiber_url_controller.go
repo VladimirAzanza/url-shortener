@@ -198,7 +198,7 @@ func (c *FiberURLController) HandleAPIPostBatch(ctx *fiber.Ctx) error {
 // @Router /api/user/urls [post]
 func (c *FiberURLController) HandleAPIDeleteBatch(ctx *fiber.Ctx) error {
 	var batchRequestDTO dto.DeleteURLsRequestDTO
-	if err := ctx.BodyParser(&batchRequestDTO); err != nil {
+	if err := ctx.BodyParser(&batchRequestDTO.URLIDs); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": constants.MsgFailedToParseBody,
 		})
@@ -210,5 +210,17 @@ func (c *FiberURLController) HandleAPIDeleteBatch(ctx *fiber.Ctx) error {
 		})
 	}
 
+	var err error
+	if len(batchRequestDTO.URLIDs) > 1 {
+		err = c.service.ConcurrentBatchDelete(ctx.Context(), batchRequestDTO.URLIDs)
+	} else {
+		err = c.service.BatchDeleteURLs(ctx.Context(), batchRequestDTO.URLIDs)
+	}
+
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "failed to process batch delete",
+		})
+	}
 	return ctx.SendStatus(fiber.StatusAccepted)
 }

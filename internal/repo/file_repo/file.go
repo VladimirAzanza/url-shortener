@@ -80,3 +80,7 @@ func (r *FileRepository) GetShortIDByOriginalURL(ctx context.Context, originalUR
 	}
 	return "", nil
 }
+
+func (r *FileRepository) BatchDeleteURLs(ctx context.Context, shortURLs []string) error {
+	return nil
+}
