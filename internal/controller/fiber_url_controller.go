@@ -184,5 +184,31 @@ func (c *FiberURLController) HandleAPIPostBatch(ctx *fiber.Ctx) error {
 		})
 	}
 	return ctx.Status(fiber.StatusCreated).JSON(responses)
+}
 
+// HandleAPIDeleteBatch Delete multiple URLs in batch
+// @Summary Delete multiple URLs in a single request
+// @Description Accepts a batch of URLs
+// @Tags API
+// @Accept json
+// @Param request body dto.DeleteURLsRequestDTO true "Array of URLs to delete"
+// @Success 202 {array}
+// @Failure 400 {object} map[string]string "When request body is invalid or empty"
+// @Failure 500 {object} map[string]string "When internal server error occurs"
+// @Router /api/user/urls [post]
+func (c *FiberURLController) HandleAPIDeleteBatch(ctx *fiber.Ctx) error {
+	var batchRequestDTO dto.DeleteURLsRequestDTO
+	if err := ctx.BodyParser(&batchRequestDTO); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": constants.MsgFailedToParseBody,
+		})
+	}
+
+	if len(batchRequestDTO.URLIDs) == 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "empty batch",
+		})
+	}
+
+	return ctx.SendStatus(fiber.StatusAccepted)
 }

@@ -60,4 +60,10 @@ func provideRepository(cfg *config.Config) repo.IURLRepository {
 // Agregar tests de benchmarking
 // Intentar usar errors is errores as y join => revisar increment 13
 // investigar sobre sqlc
-// agregar autentificacion
+// agregar autentificacion con cookies con id unico para user (*http.Request).Cookie() http.SetCookie()
+
+// DELETE /api/user/urls 202 Accepted
+// ["6qxTVvsy", "RTfd56hn", "Jlfd67ds"]  <- input
+// Cuando se intenta ingresar a un link que ya no existe -> 410 Gone cuando Get /{id}
+// Para configurar eficazmente el indicador de eliminación en la base de datos, utilice la
+// actualización por lotes. Utilizar el bufer de objetos de actualizacion con patron fan in

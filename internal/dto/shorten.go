@@ -17,3 +17,7 @@ type BatchResponseDTO struct {
 	CorrelationID string `json:"correlation_id"`
 	ShortURL      string `json:"short_url"`
 }
+
+type DeleteURLsRequestDTO struct {
+	URLIDs []string `json:"-"`
+}

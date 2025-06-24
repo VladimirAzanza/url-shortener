@@ -42,6 +42,7 @@ func NewFiberServer(urlController *controller.FiberURLController) *fiber.App {
 	{
 		api.Post("/shorten", urlController.HandleAPIPost)
 		api.Post("/shorten/batch", urlController.HandleAPIPostBatch)
+		api.Post("/user/urls", urlController.HandleAPIDeleteBatch)
 	}
 
 	return app
