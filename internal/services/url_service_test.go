@@ -207,45 +207,6 @@ func TestGetOriginalURL(t *testing.T) {
 	}
 }
 
-// func TestGetOriginalAPIURL(t *testing.T) {
-// 	s := NewURLService(getTestConfig())
-// 	testURL := "https://example.com"
-// 	req := &dto.ShortenRequestDTO{URL: testURL}
-// 	shortID, err := s.ShortenAPIURL(context.Background(), req)
-
-// 	tests := []struct {
-// 		name     string
-// 		shortID  string
-// 		expected string
-// 		exists   bool
-// 	}{
-// 		{"Existing URL", shortID, testURL, true},
-// 		{"Non Existin URL", "", "", false},
-// 	}
-
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			originalURL, exists := s.GetOriginalURL(context.Background(), tt.shortID)
-// 			assert.Equal(t, tt.exists, exists)
-// 			if exists {
-// 				assert.Equal(t, tt.expected, originalURL)
-// 			}
-// 		})
-// 	}
-// }
-
-// func TestGenerateUniqueId(t *testing.T) {
-// 	fURL := "https://example.com"
-// 	sURL := "https://google.com"
-
-// 	id1 := generateUniqueID(fURL)
-// 	id2 := generateUniqueID(sURL)
-
-// 	assert.Len(t, id1, 16)
-// 	assert.Len(t, id2, 16)
-// 	assert.NotEqual(t, id1, id2, "ID's should be unique for different URLS")
-// }
-
 func TestBatchShortenURL(t *testing.T) {
 	tests := []struct {
 		name                string
@@ -425,13 +386,13 @@ func TestConcurrentBatchDelete(t *testing.T) {
 	}{
 		{
 			name:          "Successful concurrent delete",
-			shortURLs:     []string{"a", "b", "c", "d", "e"},
-			batchReturns:  []error{nil, nil, nil},
+			shortURLs:     make([]string, 150), // More than a batch
+			batchReturns:  []error{nil, nil},
 			expectedError: nil,
 		},
 		{
 			name:          "Failed concurrent delete",
-			shortURLs:     []string{"a", "b", "c", "d", "e"},
+			shortURLs:     make([]string, 150),
 			batchReturns:  []error{nil, errors.New("batch error"), nil},
 			expectedError: errors.New("batch error"),
 		},
@@ -444,20 +405,14 @@ func TestConcurrentBatchDelete(t *testing.T) {
 
 			ctx := context.Background()
 
-			// Expect 3 calls (batch size of 2 for 5 items)
 			mockRepo.EXPECT().
-				BatchDeleteURLs(ctx, []string{"a", "b"}).
+				BatchDeleteURLs(ctx, gomock.Any()).
 				Return(tt.batchReturns[0]).
 				Times(1)
 
 			mockRepo.EXPECT().
-				BatchDeleteURLs(ctx, []string{"c", "d"}).
+				BatchDeleteURLs(ctx, gomock.Any()).
 				Return(tt.batchReturns[1]).
-				Times(1)
-
-			mockRepo.EXPECT().
-				BatchDeleteURLs(ctx, []string{"e"}).
-				Return(tt.batchReturns[2]).
 				Times(1)
 
 			err := s.ConcurrentBatchDelete(ctx, tt.shortURLs)

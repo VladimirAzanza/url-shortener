@@ -29,7 +29,7 @@ func NewURLService(cfg *config.Config, repo repo.IURLRepository) IURLService {
 }
 
 func (s *URLService) ConcurrentBatchDelete(ctx context.Context, shortURLs []string) error {
-	const batchSize = 2
+	const batchSize = 100
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(shortURLs)/batchSize+1)
 

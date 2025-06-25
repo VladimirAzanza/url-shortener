@@ -56,10 +56,8 @@ func provideRepository(cfg *config.Config) repo.IURLRepository {
 	}
 }
 
-// Agregar mock uber y testear los controllers
 // Agregar tests de benchmarking
 // Intentar usar errors is errores as y join => revisar increment 13
-// investigar sobre sqlc
 // agregar autentificacion con cookies con id unico para user (*http.Request).Cookie() http.SetCookie()
 
 // DELETE /api/user/urls 202 Accepted
