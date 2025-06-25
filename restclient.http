@@ -42,11 +42,11 @@ content-type: application/json
 [
     {
         "correlation_id": "100FED",
-        "original_url": "http://httpbin.org/delay/11"
+        "original_url": "http://httpbin.org/delay/3"
     },
     {
         "correlation_id": "200DHF",
-        "original_url": "http://httpbin.org/delay/55"
+        "original_url": "http://httpbin.org/delay/4"
     }
 ]
 
@@ -57,11 +57,11 @@ POST {{baseUrl}}/api/user/urls HTTP/1.1
 content-type: application/json
 
 [
-    "19ac67f118471491",
-    "259950ad18471493",
-    "c3521caf184bff09",
-    "149e3b1a184bff09",
-    "022cedd1184bff72,"
+    "022cedd1184bff82",
+    "b4e8c5d3184bff82",
+    "259950ad184bff8a",
+    "19ac67f1184bff8a",
+    "c3521caf184bff8f"
 ]
 
 ###

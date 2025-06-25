@@ -21,7 +21,7 @@ type URLService struct {
 	repo repo.IURLRepository
 }
 
-func NewURLService(cfg *config.Config, repo repo.IURLRepository) *URLService {
+func NewURLService(cfg *config.Config, repo repo.IURLRepository) IURLService {
 	return &URLService{
 		cfg:  cfg,
 		repo: repo,
