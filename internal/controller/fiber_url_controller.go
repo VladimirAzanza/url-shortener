@@ -14,10 +14,10 @@ import (
 )
 
 type FiberURLController struct {
-	service *services.URLService
+	service services.IURLService
 }
 
-func NewFiberURLController(service *services.URLService) *FiberURLController {
+func NewFiberURLController(service services.IURLService) *FiberURLController {
 	return &FiberURLController{
 		service: service,
 	}
